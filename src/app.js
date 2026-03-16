@@ -1,0 +1,20 @@
+const express = require('express');
+const app = express();
+
+const v1Routes = require("./routes/v1");
+
+// Middleware
+app.use(express.json());
+
+// Routes
+app.use("/api/v1", v1Routes);
+
+app.get('/', (req, res) => {
+    res.send("Hello World");
+});
+
+app.get('/blog', (req, res) => {
+    res.send("Hello blog");
+});
+
+module.exports = app;

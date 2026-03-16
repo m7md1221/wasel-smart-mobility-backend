@@ -1,18 +1,23 @@
-const express = require('express')
-const app = express()
+const http = require("http");
+const app = require("./app");
 
-const posts = [
-  {
-    username: 'john',
-    title: 'post 1'
-  },
-   {
-    username: 'marah',
-    title: 'post 2'
-  }
-]
+const port = 4000;
 
-app.get('/posts',(req,res)=>{
-res.json(posts)
-})
-app.listen(3000)
+const server = http.createServer(app);
+
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+
+const sequelize = require("./config/database");
+
+sequelize.authenticate()
+  .then(() => {
+    console.log("Database connected successfully");
+  })
+  .catch(err => {
+    console.error("Database connection error:", err);
+  });
+
+
+  
