@@ -78,4 +78,52 @@ async function showAllUsers(req,res){
   });
   }
 }
-module.exports = { addUser, showUserInfo, showAllUsers };
+async function updateUser(req,res){
+  try{
+  const id = parseInt(req.params.id);
+  const updatedData =  
+  { name: req.body.name,
+ email: req.body.email,
+ password: req.body.password,
+  role: req.body.role,
+   confidence_score: req.body.confidence_score,
+    is_active: req.body.is_active,
+     is_authorized: req.body.is_authorized,
+    updated_at: new Date() };
+  const user = await User.findByPk(id) ; 
+  if(!user){
+    return res.status(404).json({
+      message : "User not found"
+    });
+  }
+  await user.update(updatedData);
+  res.status(200).json({
+    message : "User updated successfully",
+    user  
+  });
+}
+catch(error){
+    res.status(500).json({
+      message : "something went wrong while updating user info",
+      error : error.message
+    });
+  }
+}
+async function deleteUser(req,res){
+  try{
+  const id = parseInt(req.params.id);
+  const user = await User.findByPk(id);
+  if(!user){
+    return res.status(404).json({
+      message : "User not found"
+    });
+  }
+  await user.destroy();
+  res.status(200).json({
+    message : "User deleted successfully"
+  });
+
+  }catch(error){
+  }
+}
+module.exports = { addUser, showUserInfo, showAllUsers, updateUser, deleteUser };
