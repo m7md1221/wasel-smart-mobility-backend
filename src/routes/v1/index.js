@@ -1,9 +1,9 @@
 const express = require("express");
+const userRouter = require('../users');
 const router = express.Router();
 
-router.get("/test", (req, res) => {
-  res.json({ message: "API v1 working" });
-  console.log("v1 routes loaded");
-}); 
-
+router.use("/users", userRouter);
 module.exports = router;
+
+
+

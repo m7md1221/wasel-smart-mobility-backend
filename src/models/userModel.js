@@ -30,7 +30,9 @@ const User = sequelize.define("User", {
   updated_at: DataTypes.DATE
 }, {
   tableName: "users",
-  timestamps: false
+  timestamps: true,
+  createdAt: 'created_at', 
+  updatedAt: 'updated_at'
 });
 
 module.exports = User;
