@@ -1,3 +1,4 @@
+require("dotenv").config();
 const http = require("http");
 const app = require("./app");
 
@@ -10,7 +11,6 @@ server.listen(port, () => {
 });
 
 const sequelize = require("./config/database");
-
 sequelize.authenticate()
   .then(() => {
     console.log("Database connected successfully");
