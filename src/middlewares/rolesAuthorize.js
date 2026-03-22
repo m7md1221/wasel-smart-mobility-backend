@@ -1,6 +1,5 @@
 const authorizeRole = (...allowedRoles) => {
   return (req, res, next) => {
-    console.log("User found in request:", req.user);
     // check if user exists and  has a role
     const userRole = req.user?.role;
 
