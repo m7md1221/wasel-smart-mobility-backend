@@ -11,7 +11,7 @@ const createUserSchema = {
   role: {
     type: "string",
     optional: true,
-    enum: [ roles.CITIZEN, roles.MODERATOR],
+    enum: [ roles.CITIZEN, roles.MODERATOR,roles.ADMIN],
     uppercase: true 
   },
 
@@ -44,7 +44,7 @@ const updateUserSchema = {
   role: {
     type: "string",
     optional: true,
-    enum: [ roles.CITIZEN, roles.MODERATOR],
+    enum: [ roles.CITIZEN, roles.MODERATOR, roles.ADMIN ],
     uppercase: true
   },
   confidence_score: { type: "number", optional: true, min: 0, max: 100 },
