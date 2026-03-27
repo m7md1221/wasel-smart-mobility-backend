@@ -71,7 +71,7 @@ async function login(req, res) {
         role: user.role
       },
       process.env.JWT_SECRET, 
-      { expiresIn: "1h" }
+      { expiresIn: "2h" }
     );
 
   if (!user.is_active) {
