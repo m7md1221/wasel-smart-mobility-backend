@@ -6,6 +6,6 @@ const authentication = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.post("/estimate", authentication.checkAuth, validate(estimateRouteSchema), routeController.estimateRoute);
+router.post("/checkpoints", authentication.checkAuth, validate(estimateRouteSchema), routeController.estimateRoute);
 
 module.exports = router;
