@@ -15,7 +15,6 @@ router.post(
   validate(estimateRouteSchema),
   routeController.estimateRoute
 );
-router.post("/checkpoints", authentication.checkAuth, validate(estimateRouteSchema), routeController.estimateRoute);
 
 // API v1 routes
 router.use("/v1", v1Routes);
