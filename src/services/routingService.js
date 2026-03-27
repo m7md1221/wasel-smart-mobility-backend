@@ -61,13 +61,8 @@ async function getCachedResponse(requestHash) {
       }
     });
 
-    if (!dbEntry) {
-      return null;
-    }
-
-    if (new Date(dbEntry.expires_at).getTime() <= Date.now()) {
-      return null;
-    }
+    if (!dbEntry) return null;
+    if (new Date(dbEntry.expires_at).getTime() <= Date.now()) return null;
 
     memoryCache.set(requestHash, {
       data: dbEntry.response_data,
@@ -75,7 +70,7 @@ async function getCachedResponse(requestHash) {
     });
 
     return dbEntry.response_data;
-  } catch (_error) {
+  } catch {
     return null;
   }
 }
@@ -87,17 +82,11 @@ async function setCachedResponse(requestHash, data, ttlSeconds) {
   try {
     const expiresAtDate = new Date(expiresAt);
     const existing = await ExternalApiCache.findOne({
-      where: {
-        provider_name: PROVIDER_NAME,
-        request_hash: requestHash
-      }
+      where: { provider_name: PROVIDER_NAME, request_hash: requestHash }
     });
 
     if (existing) {
-      await existing.update({
-        response_data: data,
-        expires_at: expiresAtDate
-      });
+      await existing.update({ response_data: data, expires_at: expiresAtDate });
       return;
     }
 
@@ -108,19 +97,13 @@ async function setCachedResponse(requestHash, data, ttlSeconds) {
       expires_at: expiresAtDate,
       created_at: new Date()
     });
-  } catch (_error) {
-    // Ignore database cache errors and continue with in-memory cache.
-  }
+  } catch {}
 }
 
 async function getCheckpointMapByIds(checkpointIds) {
-  if (!checkpointIds || checkpointIds.length === 0) {
-    return new Map();
-  }
+  if (!checkpointIds?.length) return new Map();
 
-  const checkpoints = await Checkpoint.findAll({
-    where: { id: checkpointIds }
-  });
+  const checkpoints = await Checkpoint.findAll({ where: { id: checkpointIds } });
 
   return checkpoints.reduce((acc, checkpoint) => {
     acc.set(checkpoint.id, {
@@ -133,61 +116,31 @@ async function getCheckpointMapByIds(checkpointIds) {
 }
 
 function routeViolatesAreas(routeCoordinates, avoidAreas) {
-  const violatedAreas = [];
+  return avoidAreas.flatMap((area, index) => {
+    const intersects = routeCoordinates.some(([lng, lat]) =>
+      haversineDistanceKm(lat, lng, area.center.lat, area.center.lng) <= area.radiusKm
+    );
 
-  for (const [index, area] of avoidAreas.entries()) {
-    const radiusKm = area.radiusKm;
-    const areaLat = area.center.lat;
-    const areaLng = area.center.lng;
-
-    const intersects = routeCoordinates.some(([lng, lat]) => {
-      const distance = haversineDistanceKm(lat, lng, areaLat, areaLng);
-      return distance <= radiusKm;
-    });
-
-    if (intersects) {
-      violatedAreas.push({
-        index,
-        radiusKm,
-        center: area.center
-      });
-    }
-  }
-
-  return violatedAreas;
+    return intersects ? [{ index, radiusKm: area.radiusKm, center: area.center }] : [];
+  });
 }
 
 function routeViolatesCheckpoints(routeCoordinates, checkpointsById, checkpointIds) {
-  const violatedCheckpoints = [];
+  return checkpointIds.flatMap(id => {
+    const cp = checkpointsById.get(id);
+    if (!cp) return [];
 
-  for (const checkpointId of checkpointIds) {
-    const checkpoint = checkpointsById.get(checkpointId);
+    const intersects = routeCoordinates.some(([lng, lat]) =>
+      haversineDistanceKm(lat, lng, cp.latitude, cp.longitude) <= CHECKPOINT_RADIUS_KM
+    );
 
-    if (!checkpoint) {
-      continue;
-    }
-
-    const intersects = routeCoordinates.some(([lng, lat]) => {
-      const distance = haversineDistanceKm(lat, lng, checkpoint.latitude, checkpoint.longitude);
-      return distance <= CHECKPOINT_RADIUS_KM;
-    });
-
-    if (intersects) {
-      violatedCheckpoints.push({
-        id: checkpointId,
-        name: checkpoint.name || null
-      });
-    }
-  }
-
-  return violatedCheckpoints;
+    return intersects ? [{ id, name: cp.name || null }] : [];
+  });
 }
 
 function normalizeProviderRouteResponse(providerData) {
   const feature = providerData?.features?.[0];
-  if (!feature || !feature.geometry || !Array.isArray(feature.geometry.coordinates)) {
-    return null;
-  }
+  if (!feature?.geometry?.coordinates) return null;
 
   return {
     distance: feature.properties?.summary?.distance,
@@ -197,220 +150,103 @@ function normalizeProviderRouteResponse(providerData) {
 }
 
 function buildProviderRequest(from, to) {
-  const providerBaseUrl = getProviderBaseUrl();
-  let endpoint = `${providerBaseUrl}/v2/directions/driving-car/geojson`;
-  
-  // Add API key as query param if available (OpenRouteService standard method)
+  const base = getProviderBaseUrl();
+  let endpoint = `${base}/v2/directions/driving-car/geojson`;
+
   if (process.env.ORS_API_KEY) {
     endpoint += `?api_key=${encodeURIComponent(process.env.ORS_API_KEY)}`;
   }
-  
+
   return {
     endpoint,
     method: "POST",
     body: JSON.stringify({
-      coordinates: [
-        [from.lng, from.lat],
-        [to.lng, to.lat]
-      ]
+      coordinates: [[from.lng, from.lat], [to.lng, to.lat]]
     })
   };
 }
 
 async function fetchRouteFromProvider(from, to, timeoutMs) {
-  const requestConfig = buildProviderRequest(from, to);
-
+  const req = buildProviderRequest(from, to);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-  const headers = {
-    "Content-Type": "application/json",
-    "User-Agent": "Wasel-Smart-Mobility/1.0"
-  };
-
   try {
-    console.log(`[Routing] Fetching route from provider...`);
-    const response = await fetch(requestConfig.endpoint, {
-      method: requestConfig.method,
-      headers,
-      body: requestConfig.body,
+    const res = await fetch(req.endpoint, {
+      method: req.method,
+      headers: { "Content-Type": "application/json" },
+      body: req.body,
       signal: controller.signal
     });
 
-    if (response.status === 429) {
-      const retryAfter = response.headers.get("retry-after");
-      console.warn(`[Routing] Rate limit hit. Retry after: ${retryAfter}s`);
-      return {
-        errorType: "RATE_LIMIT",
-        retryAfter,
-        message: "Routing provider rate limited. Please retry after " + (retryAfter || "30") + " seconds."
-      };
+    if (res.status === 429) {
+      return { errorType: "RATE_LIMIT", retryAfter: res.headers.get("retry-after") };
     }
 
-    if (!response.ok) {
-      let errorDetails = "";
-      try {
-        const errorData = await response.json();
-        errorDetails = JSON.stringify(errorData);
-      } catch (_) {
-        errorDetails = await response.text().catch(() => "No details available");
-      }
-      
-      console.error(`[Routing] Provider error ${response.status}: ${errorDetails}`);
-      return {
-        errorType: "PROVIDER_ERROR",
-        status: response.status,
-        message: `Routing provider returned status ${response.status}`,
-        details: errorDetails
-      };
+    if (!res.ok) {
+      return { errorType: "PROVIDER_ERROR", status: res.status };
     }
 
-    const data = await response.json();
-    console.log(`[Routing] Route fetched successfully. Distance: ${data?.features?.[0]?.properties?.summary?.distance}m`);
-    return { data };
-  } catch (error) {
-    if (error.name === "AbortError") {
-      console.error(`[Routing] Request timeout after ${timeoutMs}ms`);
-      return { 
-        errorType: "TIMEOUT",
-        message: `Routing provider request timeout after ${timeoutMs}ms`
-      };
-    }
-
-    console.error(`[Routing] Network error:`, error.message);
-    return {
-      errorType: "NETWORK_ERROR",
-      message: error.message
-    };
+    return { data: await res.json() };
+  } catch (e) {
+    if (e.name === "AbortError") return { errorType: "TIMEOUT" };
+    return { errorType: "NETWORK_ERROR", message: e.message };
   } finally {
     clearTimeout(timeout);
   }
 }
 
 async function estimateRoute({ from, to, constraints }) {
-  // Validate input
-  if (!from || !from.lat || from.lng === undefined) {
-    return {
-      error: {
-        errorType: "INVALID_INPUT",
-        message: "Invalid 'from' coordinates. Expected {lat: number, lng: number}"
-      }
-    };
+  if (!from || from.lat === undefined || from.lng === undefined) {
+    return { error: { errorType: "INVALID_INPUT", message: "Invalid 'from'" } };
   }
-  
-  if (!to || !to.lat || to.lng === undefined) {
-    return {
-      error: {
-        errorType: "INVALID_INPUT",
-        message: "Invalid 'to' coordinates. Expected {lat: number, lng: number}"
-      }
-    };
+
+  if (!to || to.lat === undefined || to.lng === undefined) {
+    return { error: { errorType: "INVALID_INPUT", message: "Invalid 'to'" } };
   }
 
   const timeoutMs = Number(process.env.ROUTING_TIMEOUT_MS || DEFAULT_TIMEOUT_MS);
-  const cacheTtlSeconds = Number(process.env.ROUTING_CACHE_TTL_SECONDS || DEFAULT_CACHE_TTL_SECONDS);
+  const ttl = Number(process.env.ROUTING_CACHE_TTL_SECONDS || DEFAULT_CACHE_TTL_SECONDS);
 
-  const requestPayload = { from, to, constraints };
-  const requestHash = buildCacheKey(requestPayload);
+  const hash = buildCacheKey({ from, to, constraints });
 
-  try {
-    const cached = await getCachedResponse(requestHash);
-    if (cached) {
-      console.log(`[Routing] Cache hit for route`);
-      return {
-        ...cached,
-        metadata: {
-          ...cached.metadata,
-          source: "cache"
-        }
-      };
+  const cached = await getCachedResponse(hash);
+  if (cached) {
+    return { ...cached, metadata: { ...cached.metadata, source: "cache" } };
+  }
+
+  const provider = await fetchRouteFromProvider(from, to, timeoutMs);
+  if (provider.errorType) return { error: provider };
+
+  const route = normalizeProviderRouteResponse(provider.data);
+  if (!route) return { error: { errorType: "NO_ROUTE" } };
+
+  const checkpoints = await getCheckpointMapByIds(constraints?.avoidCheckpointIds || []);
+  const violatedCheckpoints = routeViolatesCheckpoints(route.geometry.coordinates, checkpoints, constraints?.avoidCheckpointIds || []);
+  const violatedAreas = routeViolatesAreas(route.geometry.coordinates, constraints?.avoidAreas || []);
+
+  const payload = {
+    estimatedDistanceMeters: route.distance,
+    estimatedDurationSeconds: route.duration,
+    routeGeometry: route.geometry,
+    metadata: {
+      provider: PROVIDER_NAME,
+      source: "provider",
+      requestedAt: new Date().toISOString(),
+      violations: { checkpoints: violatedCheckpoints, areas: violatedAreas }
     }
-  } catch (cacheError) {
-    console.warn(`[Routing] Cache retrieval error (continuing):`, cacheError.message);
-  }
+  };
 
-  const providerResult = await fetchRouteFromProvider(from, to, timeoutMs);
+  await setCachedResponse(hash, payload, ttl);
 
-  if (providerResult.errorType) {
+  if (violatedCheckpoints.length || violatedAreas.length) {
     return {
-      error: providerResult
+      error: { errorType: "CONSTRAINT_VIOLATION", details: payload.metadata.violations },
+      payload
     };
   }
 
-  const route = normalizeProviderRouteResponse(providerResult.data);
-  if (!route) {
-    console.warn(`[Routing] No valid route in provider response`);
-    return {
-      error: {
-        errorType: "NO_ROUTE",
-        message: "No route found for the given coordinates"
-      }
-    };
-  }
-
-  const routeCoordinates = route.geometry.coordinates;
-  const avoidCheckpointIds = constraints?.avoidCheckpointIds || [];
-  const avoidAreas = constraints?.avoidAreas || [];
-
-  try {
-    const checkpointsById = await getCheckpointMapByIds(avoidCheckpointIds);
-    const violatedCheckpoints = routeViolatesCheckpoints(routeCoordinates, checkpointsById, avoidCheckpointIds);
-    const violatedAreas = routeViolatesAreas(routeCoordinates, avoidAreas);
-
-    const violatesConstraints = violatedCheckpoints.length > 0 || violatedAreas.length > 0;
-
-    const payload = {
-      estimatedDistanceMeters: route.distance || null,
-      estimatedDurationSeconds: route.duration || null,
-      routeGeometry: route.geometry,
-      metadata: {
-        provider: PROVIDER_NAME,
-        source: "provider",
-        requestedAt: new Date().toISOString(),
-        factors: ["traffic-model-from-provider", "checkpoint-and-area-constraint-check"],
-        constraintsApplied: {
-          avoidCheckpointIds,
-          avoidAreas
-        },
-        violations: {
-          checkpoints: violatedCheckpoints,
-          areas: violatedAreas
-        }
-      }
-    };
-
-    try {
-      await setCachedResponse(requestHash, payload, cacheTtlSeconds);
-    } catch (cacheError) {
-      console.warn(`[Routing] Failed to cache response (continuing):`, cacheError.message);
-    }
-
-    if (violatesConstraints) {
-      console.info(`[Routing] Route violates constraints. Violations: ${JSON.stringify(payload.metadata.violations)}`);
-      return {
-        error: {
-          errorType: "CONSTRAINT_VIOLATION",
-          message: "Route violates selected constraints",
-          details: payload.metadata.violations
-        },
-        payload
-      };
-    }
-
-    console.info(`[Routing] Route successfully estimated: ${route.distance}m, ${route.duration}s`);
-    return payload;
-  } catch (error) {
-    console.error(`[Routing] Error during constraint checking:`, error.message);
-    return {
-      error: {
-        errorType: "CONSTRAINT_CHECK_ERROR",
-        message: "Error while checking route constraints",
-        details: error.message
-      }
-    };
-  }
+  return payload;
 }
 
-module.exports = {
-  estimateRoute
-};
+module.exports = { estimateRoute };
