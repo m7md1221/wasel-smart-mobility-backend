@@ -93,55 +93,70 @@ async function login(req, res) {
 
 async function addUser(req, res) {
   try {
-    //signup validation 
-
     const { name, email, password, role, confidence_score, is_active, is_authorized } = req.body;
- 
 
+    // Hash password like in signup
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(password, salt);
 
     const user = await User.create({
       name,
       email,
-      password,
+      password: hashedPassword,
       role: role || roles.CITIZEN,
       confidence_score,
       is_active,
       is_authorized
     });
 
-    res.status(200).json({
-     message: "User created successfully",
-      user
+    // Don't return password in response
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+
+    res.status(201).json({
+      message: "User created successfully",
+      user: userResponse
     });
 
-  }
-   catch (error) { // error handling for user creation 
-    console.error(error); 
+  } catch (error) {
+    console.error("[User] Error creating user:", error);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res.status(400).json({
+        message: "User with this email already exists"
+      });
+    }
     res.status(500).json({
       message: "Error creating user",
-      error: error.message,
-      stack: error.stack
+      error: error.message
     });
   }
 }
 
 async function showUserInfo(req,res){
   try{
-  const id = parseInt(req.params.id);
-  const user = await User.findByPk(id);
-  if(!user){
-    return res.status(404).json({
-      message : "User not found"
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        message: "Invalid user ID"
+      });
+    }
+    const user = await User.findByPk(id);
+    if(!user){
+      return res.status(404).json({
+        message : "User not found"
+      });
+    }
+    // Don't return password
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+    res.status(200).json(userResponse);
+  } catch(error){
+    console.error("[User] Error fetching user info:", error);
+    res.status(500).json({
+      message : "Error fetching user info",
+      error : error.message
     });
   }
-  res.status(200).json(user);
-}
-catch(error){
-  res.status(500).json({
-    message : "something went wrong while fetching user info",
-    error : error.message
-  });
-}
 }
 async function showAllUsers(req,res){
   try{
@@ -151,47 +166,66 @@ async function showAllUsers(req,res){
           message : "No users found"
         });
       }
-      res.status(200).json(users);
-  }catch(error){
+      // Don't return passwords
+      const safeUsers = users.map(u => {
+        const userObj = u.toJSON();
+        delete userObj.password;
+        return userObj;
+      });
+      res.status(200).json(safeUsers);
+  } catch(error){
+    console.error("[User] Error fetching users:", error);
     res.status(500).json({
-    message : "something went wrong while fetching users info",
-    error : error.message
-  });
+      message : "Error fetching users",
+      error : error.message
+    });
   }
 }
 async function updateUser(req,res){
   try{
-  const id = parseInt(req.params.id);
-   if (Object.keys(req.body).length === 0) {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        message: "Invalid user ID"
+      });
+    }
+    if (Object.keys(req.body).length === 0) {
       return res.status(400).json({
         message: "No data provided for update"
       });
     }
-const user = await User.findByPk(id);
-
+    const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({
         message: "User not found"
       });
     }
 
-   const updatedData = {};
-    Object.keys(req.body).forEach((key) => {
+    const updatedData = {};
+    for (const key of Object.keys(req.body)) {
+      // Don't allow direct password update through this endpoint
+      if (key === "password") {
+        continue;
+      }
       if (req.body[key] !== undefined) {
         updatedData[key] = req.body[key];
       }
-    });
+    }
+    
     updatedData.updated_at = new Date();
     await user.update(updatedData);
+    
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+    
     return res.status(200).json({
       message: "User updated successfully",
-      user
+      user: userResponse
     });
-}
-  
-catch(error){
+  } catch(error){
+    console.error("[User] Error updating user:", error);
     res.status(500).json({
-      message : "something went wrong while updating user info",
+      message : "Error updating user",
       error : error.message
     });
   }
@@ -199,19 +233,24 @@ catch(error){
 
 async function deleteUser(req,res){
   try{
-  const id = parseInt(req.params.id);
-  const user = await User.findByPk(id);
-  if(!user){
-    return res.status(404).json({
-      message : "User not found"
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        message: "Invalid user ID"
+      });
+    }
+    const user = await User.findByPk(id);
+    if(!user){
+      return res.status(404).json({
+        message : "User not found"
+      });
+    }
+    await user.destroy();
+    res.status(200).json({
+      message : "User deleted successfully"
     });
-  }
-  await user.destroy();
-  res.status(200).json({
-    message : "User deleted successfully"
-  });
-
-  }catch(error){
+  } catch(error){
+    console.error("[User] Error deleting user:", error);
     return res.status(500).json({
       message: "Error deleting user",
       error: error.message
