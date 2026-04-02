@@ -3,45 +3,26 @@ const roles = require('../constants/roles');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// ✅ SIGNUP
 async function signup(req, res) {
-async function signup(req,res){
-  const userEmail = await User.findOne({ where: { email: req.body.email } });
-  if (userEmail) {
-    return res.status(400).json({
-      message: "User with this email already exists"
-    });
-  }
-
   try {
-    const {
-      name,
-      email,
-      password,
-      role,
-      confidence_score,
-      is_active,
-      is_authorized
-    } = req.body;
+    const { name, email, password, role } = req.body;
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User with this email already exists"
+      });
+    }
 
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
-    const user = await User.create({
+    await User.create({
       name,
       email,
       password: hashedPassword,
-      role: role || roles.ADMIN, // ✅ أهم تعديل
-     const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
-
-const user = await User.create({
-      name,
-      email,
-      password: hashedPassword, 
-      role,
-      confidence_score,
-      is_active,
-      is_authorized
+      role: role || roles.ADMIN
     });
 
     return res.status(201).json({
@@ -49,22 +30,14 @@ const user = await User.create({
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error creating user",
       error: error.message
     });
   }
 }
-}catch(error){
-  res.status(500).json({
-     message: "Error creating user",
-      error: error.message,
-      stack: error.stack
-  })
 
-}
-  }
-
+// ✅ LOGIN
 async function login(req, res) {
   try {
     const { email, password } = req.body;
@@ -75,187 +48,125 @@ async function login(req, res) {
         message: "Invalid email or password"
       });
     }
-    const isPasswordValid = await bcryptjs.compare(password, user.password);
 
-    if (!isPasswordValid) {
+    const isValid = await bcryptjs.compare(password, user.password);
+    if (!isValid) {
       return res.status(401).json({
         message: "Invalid email or password"
       });
     }
+
+    if (!user.is_active) {
+      return res.status(403).json({
+        message: "Account is inactive"
+      });
+    }
+
     const token = jwt.sign(
       {
         userId: user.id,
         email: user.email,
         role: user.role
       },
-      process.env.JWT_SECRET, 
+      process.env.JWT_SECRET,
       { expiresIn: "2h" }
-      { expiresIn: "1h" }
     );
 
-  if (!user.is_active) {
-  return res.status(403).json({
-    message: "Account is inactive"
-  });
-}
     return res.status(200).json({
       message: "Authentication successful",
       token
     });
-  }catch(error){
+
+  } catch (error) {
     return res.status(500).json({
       message: "Error during authentication",
       error: error.message
     });
   }
-} 
+}
 
+// ✅ ADD USER
 async function addUser(req, res) {
   try {
-    const { name, email, password, role, confidence_score, is_active, is_authorized } = req.body;
+    const { name, email, password, role } = req.body;
 
-    // Hash password like in signup
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
-    //signup validation 
-
-    const { name, email, password, role, confidence_score, is_active, is_authorized } = req.body;
- 
-
 
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      password,
-      role: role || roles.CITIZEN,
-      confidence_score,
-      is_active,
-      is_authorized
+      role: role || roles.CITIZEN
     });
 
-    // Don't return password in response
     const userResponse = user.toJSON();
     delete userResponse.password;
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "User created successfully",
       user: userResponse
     });
 
   } catch (error) {
-    console.error("[User] Error creating user:", error);
-    if (error.name === "SequelizeUniqueConstraintError") {
-      return res.status(400).json({
-        message: "User with this email already exists"
-      });
-    }
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error creating user",
       error: error.message
-    res.status(200).json({
-     message: "User created successfully",
-      user
-    });
-
-  }
-   catch (error) { // error handling for user creation 
-    console.error(error); 
-    res.status(500).json({
-      message: "Error creating user",
-      error: error.message,
-      stack: error.stack
     });
   }
 }
 
-async function showUserInfo(req,res){
-  try{
+// ✅ GET USER
+async function showUserInfo(req, res) {
+  try {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({
-        message: "Invalid user ID"
-      });
-    }
+
     const user = await User.findByPk(id);
-    if(!user){
+    if (!user) {
       return res.status(404).json({
-        message : "User not found"
+        message: "User not found"
       });
     }
-    // Don't return password
+
     const userResponse = user.toJSON();
     delete userResponse.password;
-    res.status(200).json(userResponse);
-  } catch(error){
-    console.error("[User] Error fetching user info:", error);
-    res.status(500).json({
-      message : "Error fetching user info",
-      error : error.message
+
+    return res.status(200).json(userResponse);
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching user",
+      error: error.message
     });
   }
-  const id = parseInt(req.params.id);
-  const user = await User.findByPk(id);
-  if(!user){
-    return res.status(404).json({
-      message : "User not found"
+}
+
+// ✅ GET ALL
+async function showAllUsers(req, res) {
+  try {
+    const users = await User.findAll();
+
+    const safeUsers = users.map(u => {
+      const obj = u.toJSON();
+      delete obj.password;
+      return obj;
+    });
+
+    return res.status(200).json(safeUsers);
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching users",
+      error: error.message
     });
   }
-  res.status(200).json(user);
 }
-catch(error){
-  res.status(500).json({
-    message : "something went wrong while fetching user info",
-    error : error.message
-  });
-}
-}
-async function showAllUsers(req,res){
-  try{
-      const users = await User.findAll();
-      if(users.length === 0){
-        return res.status(404).json({
-          message : "No users found"
-        });
-      }
-      // Don't return passwords
-      const safeUsers = users.map(u => {
-        const userObj = u.toJSON();
-        delete userObj.password;
-        return userObj;
-      });
-      res.status(200).json(safeUsers);
-  } catch(error){
-    console.error("[User] Error fetching users:", error);
-    res.status(500).json({
-      message : "Error fetching users",
-      error : error.message
-    });
-      res.status(200).json(users);
-  }catch(error){
-    res.status(500).json({
-    message : "something went wrong while fetching users info",
-    error : error.message
-  });
-  }
-}
-async function updateUser(req,res){
-  try{
+
+// ✅ UPDATE
+async function updateUser(req, res) {
+  try {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({
-        message: "Invalid user ID"
-      });
-    }
-    if (Object.keys(req.body).length === 0) {
-  const id = parseInt(req.params.id);
-   if (Object.keys(req.body).length === 0) {
-      return res.status(400).json({
-        message: "No data provided for update"
-      });
-    }
     const user = await User.findByPk(id);
-const user = await User.findByPk(id);
 
     if (!user) {
       return res.status(404).json({
@@ -263,90 +174,56 @@ const user = await User.findByPk(id);
       });
     }
 
-    const updatedData = {};
-    for (const key of Object.keys(req.body)) {
-      // Don't allow direct password update through this endpoint
-      if (key === "password") {
-        continue;
-      }
-      if (req.body[key] !== undefined) {
-        updatedData[key] = req.body[key];
-      }
-    }
-    
-    updatedData.updated_at = new Date();
-    await user.update(updatedData);
-    
+    await user.update(req.body);
+
     const userResponse = user.toJSON();
     delete userResponse.password;
-    
+
     return res.status(200).json({
       message: "User updated successfully",
       user: userResponse
     });
-  } catch(error){
-    console.error("[User] Error updating user:", error);
-    res.status(500).json({
-      message : "Error updating user",
-   const updatedData = {};
-    Object.keys(req.body).forEach((key) => {
-      if (req.body[key] !== undefined) {
-        updatedData[key] = req.body[key];
-      }
-    });
-    updatedData.updated_at = new Date();
-    await user.update(updatedData);
-    return res.status(200).json({
-      message: "User updated successfully",
-      user
-    });
-}
-  
-catch(error){
-    res.status(500).json({
-      message : "something went wrong while updating user info",
-      error : error.message
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error updating user",
+      error: error.message
     });
   }
 }
 
-async function deleteUser(req,res){
-  try{
+// ✅ DELETE
+async function deleteUser(req, res) {
+  try {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({
-        message: "Invalid user ID"
-      });
-    }
     const user = await User.findByPk(id);
-    if(!user){
+
+    if (!user) {
       return res.status(404).json({
-        message : "User not found"
+        message: "User not found"
       });
     }
-    await user.destroy();
-    res.status(200).json({
-      message : "User deleted successfully"
-    });
-  } catch(error){
-    console.error("[User] Error deleting user:", error);
-  const id = parseInt(req.params.id);
-  const user = await User.findByPk(id);
-  if(!user){
-    return res.status(404).json({
-      message : "User not found"
-    });
-  }
-  await user.destroy();
-  res.status(200).json({
-    message : "User deleted successfully"
-  });
 
-  }catch(error){
+    await user.destroy();
+
+    return res.status(200).json({
+      message: "User deleted successfully"
+    });
+
+  } catch (error) {
     return res.status(500).json({
       message: "Error deleting user",
       error: error.message
     });
   }
 }
-module.exports = { addUser, showUserInfo, showAllUsers, updateUser, deleteUser,signup,login };
+
+module.exports = {
+  signup,
+  login,
+  addUser,
+  showUserInfo,
+  showAllUsers,
+  updateUser,
+  deleteUser
+};
