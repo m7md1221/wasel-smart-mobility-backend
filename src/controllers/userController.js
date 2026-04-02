@@ -3,50 +3,41 @@ const roles = require('../constants/roles');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-async function signup(req,res){
-  const userEmail = await User.findOne({ where: { email: req.body.email } });
-  if (userEmail) {
-    return res.status(400).json({
-      message: "User with this email already exists"
-    });
-  }
+// ✅ SIGNUP
+async function signup(req, res) {
   try {
-    const {
-      name,
-      email,
-      password,
-      role,
-      confidence_score,
-      is_active,
-      is_authorized
-    } = req.body;
-     const salt = await bcryptjs.genSalt(10);
+    const { name, email, password, role } = req.body;
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User with this email already exists"
+      });
+    }
+
+    const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
-const user = await User.create({
+    await User.create({
       name,
       email,
-      password: hashedPassword, 
-      role,
-      confidence_score,
-      is_active,
-      is_authorized
+      password: hashedPassword,
+      role: role || roles.ADMIN
     });
 
     return res.status(201).json({
       message: "User created successfully"
     });
 
-}catch(error){
-  res.status(500).json({
-     message: "Error creating user",
-      error: error.message,
-      stack: error.stack
-  })
-
-}
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error creating user",
+      error: error.message
+    });
   }
+}
 
+// ✅ LOGIN
 async function login(req, res) {
   try {
     const { email, password } = req.body;
@@ -57,117 +48,125 @@ async function login(req, res) {
         message: "Invalid email or password"
       });
     }
-    const isPasswordValid = await bcryptjs.compare(password, user.password);
 
-    if (!isPasswordValid) {
+    const isValid = await bcryptjs.compare(password, user.password);
+    if (!isValid) {
       return res.status(401).json({
         message: "Invalid email or password"
       });
     }
+
+    if (!user.is_active) {
+      return res.status(403).json({
+        message: "Account is inactive"
+      });
+    }
+
     const token = jwt.sign(
       {
         userId: user.id,
         email: user.email,
         role: user.role
       },
-      process.env.JWT_SECRET, 
-      { expiresIn: "1h" }
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
     );
 
-  if (!user.is_active) {
-  return res.status(403).json({
-    message: "Account is inactive"
-  });
-}
     return res.status(200).json({
       message: "Authentication successful",
       token
     });
-  }catch(error){
+
+  } catch (error) {
     return res.status(500).json({
       message: "Error during authentication",
       error: error.message
     });
   }
-} 
+}
 
+// ✅ ADD USER
 async function addUser(req, res) {
   try {
-    //signup validation 
+    const { name, email, password, role } = req.body;
 
-    const { name, email, password, role, confidence_score, is_active, is_authorized } = req.body;
- 
-
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(password, salt);
 
     const user = await User.create({
       name,
       email,
-      password,
-      role: role || roles.CITIZEN,
-      confidence_score,
-      is_active,
-      is_authorized
+      password: hashedPassword,
+      role: role || roles.CITIZEN
     });
 
-    res.status(200).json({
-     message: "User created successfully",
-      user
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+
+    return res.status(201).json({
+      message: "User created successfully",
+      user: userResponse
     });
 
-  }
-   catch (error) { // error handling for user creation 
-    console.error(error); 
-    res.status(500).json({
+  } catch (error) {
+    return res.status(500).json({
       message: "Error creating user",
-      error: error.message,
-      stack: error.stack
+      error: error.message
     });
   }
 }
 
-async function showUserInfo(req,res){
-  try{
-  const id = parseInt(req.params.id);
-  const user = await User.findByPk(id);
-  if(!user){
-    return res.status(404).json({
-      message : "User not found"
-    });
-  }
-  res.status(200).json(user);
-}
-catch(error){
-  res.status(500).json({
-    message : "something went wrong while fetching user info",
-    error : error.message
-  });
-}
-}
-async function showAllUsers(req,res){
-  try{
-      const users = await User.findAll();
-      if(users.length === 0){
-        return res.status(404).json({
-          message : "No users found"
-        });
-      }
-      res.status(200).json(users);
-  }catch(error){
-    res.status(500).json({
-    message : "something went wrong while fetching users info",
-    error : error.message
-  });
-  }
-}
-async function updateUser(req,res){
-  try{
-  const id = parseInt(req.params.id);
-   if (Object.keys(req.body).length === 0) {
-      return res.status(400).json({
-        message: "No data provided for update"
+// ✅ GET USER
+async function showUserInfo(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
       });
     }
-const user = await User.findByPk(id);
+
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+
+    return res.status(200).json(userResponse);
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching user",
+      error: error.message
+    });
+  }
+}
+
+// ✅ GET ALL
+async function showAllUsers(req, res) {
+  try {
+    const users = await User.findAll();
+
+    const safeUsers = users.map(u => {
+      const obj = u.toJSON();
+      delete obj.password;
+      return obj;
+    });
+
+    return res.status(200).json(safeUsers);
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching users",
+      error: error.message
+    });
+  }
+}
+
+// ✅ UPDATE
+async function updateUser(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    const user = await User.findByPk(id);
 
     if (!user) {
       return res.status(404).json({
@@ -175,47 +174,56 @@ const user = await User.findByPk(id);
       });
     }
 
-   const updatedData = {};
-    Object.keys(req.body).forEach((key) => {
-      if (req.body[key] !== undefined) {
-        updatedData[key] = req.body[key];
-      }
-    });
-    updatedData.updated_at = new Date();
-    await user.update(updatedData);
+    await user.update(req.body);
+
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+
     return res.status(200).json({
       message: "User updated successfully",
-      user
+      user: userResponse
     });
-}
-  
-catch(error){
-    res.status(500).json({
-      message : "something went wrong while updating user info",
-      error : error.message
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error updating user",
+      error: error.message
     });
   }
 }
 
-async function deleteUser(req,res){
-  try{
-  const id = parseInt(req.params.id);
-  const user = await User.findByPk(id);
-  if(!user){
-    return res.status(404).json({
-      message : "User not found"
-    });
-  }
-  await user.destroy();
-  res.status(200).json({
-    message : "User deleted successfully"
-  });
+// ✅ DELETE
+async function deleteUser(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    const user = await User.findByPk(id);
 
-  }catch(error){
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    await user.destroy();
+
+    return res.status(200).json({
+      message: "User deleted successfully"
+    });
+
+  } catch (error) {
     return res.status(500).json({
       message: "Error deleting user",
       error: error.message
     });
   }
 }
-module.exports = { addUser, showUserInfo, showAllUsers, updateUser, deleteUser,signup,login };
+
+module.exports = {
+  signup,
+  login,
+  addUser,
+  showUserInfo,
+  showAllUsers,
+  updateUser,
+  deleteUser
+};
