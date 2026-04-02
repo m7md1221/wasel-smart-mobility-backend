@@ -1,4 +1,5 @@
 const express = require("express");
+<<<<<<< HEAD
 const router = express.Router();
 
 const userRouter = require("../users");
@@ -14,3 +15,13 @@ router.get("/health", (req, res) =>
 );
 
 module.exports = router;
+=======
+const userRouter = require('../users');
+const router = express.Router();
+
+router.use("/users", userRouter);
+module.exports = router;
+
+
+
+>>>>>>> deema

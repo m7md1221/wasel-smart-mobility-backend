@@ -4,6 +4,7 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 async function signup(req, res) {
+async function signup(req,res){
   const userEmail = await User.findOne({ where: { email: req.body.email } });
   if (userEmail) {
     return res.status(400).json({
@@ -30,6 +31,14 @@ async function signup(req, res) {
       email,
       password: hashedPassword,
       role: role || roles.ADMIN, // ✅ أهم تعديل
+     const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(password, salt);
+
+const user = await User.create({
+      name,
+      email,
+      password: hashedPassword, 
+      role,
       confidence_score,
       is_active,
       is_authorized
@@ -46,6 +55,16 @@ async function signup(req, res) {
     });
   }
 }
+}catch(error){
+  res.status(500).json({
+     message: "Error creating user",
+      error: error.message,
+      stack: error.stack
+  })
+
+}
+  }
+
 async function login(req, res) {
   try {
     const { email, password } = req.body;
@@ -71,6 +90,7 @@ async function login(req, res) {
       },
       process.env.JWT_SECRET, 
       { expiresIn: "2h" }
+      { expiresIn: "1h" }
     );
 
   if (!user.is_active) {
@@ -97,11 +117,17 @@ async function addUser(req, res) {
     // Hash password like in signup
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
+    //signup validation 
+
+    const { name, email, password, role, confidence_score, is_active, is_authorized } = req.body;
+ 
+
 
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
+      password,
       role: role || roles.CITIZEN,
       confidence_score,
       is_active,
@@ -127,6 +153,18 @@ async function addUser(req, res) {
     res.status(500).json({
       message: "Error creating user",
       error: error.message
+    res.status(200).json({
+     message: "User created successfully",
+      user
+    });
+
+  }
+   catch (error) { // error handling for user creation 
+    console.error(error); 
+    res.status(500).json({
+      message: "Error creating user",
+      error: error.message,
+      stack: error.stack
     });
   }
 }
@@ -156,6 +194,21 @@ async function showUserInfo(req,res){
       error : error.message
     });
   }
+  const id = parseInt(req.params.id);
+  const user = await User.findByPk(id);
+  if(!user){
+    return res.status(404).json({
+      message : "User not found"
+    });
+  }
+  res.status(200).json(user);
+}
+catch(error){
+  res.status(500).json({
+    message : "something went wrong while fetching user info",
+    error : error.message
+  });
+}
 }
 async function showAllUsers(req,res){
   try{
@@ -178,6 +231,12 @@ async function showAllUsers(req,res){
       message : "Error fetching users",
       error : error.message
     });
+      res.status(200).json(users);
+  }catch(error){
+    res.status(500).json({
+    message : "something went wrong while fetching users info",
+    error : error.message
+  });
   }
 }
 async function updateUser(req,res){
@@ -189,11 +248,15 @@ async function updateUser(req,res){
       });
     }
     if (Object.keys(req.body).length === 0) {
+  const id = parseInt(req.params.id);
+   if (Object.keys(req.body).length === 0) {
       return res.status(400).json({
         message: "No data provided for update"
       });
     }
     const user = await User.findByPk(id);
+const user = await User.findByPk(id);
+
     if (!user) {
       return res.status(404).json({
         message: "User not found"
@@ -225,6 +288,23 @@ async function updateUser(req,res){
     console.error("[User] Error updating user:", error);
     res.status(500).json({
       message : "Error updating user",
+   const updatedData = {};
+    Object.keys(req.body).forEach((key) => {
+      if (req.body[key] !== undefined) {
+        updatedData[key] = req.body[key];
+      }
+    });
+    updatedData.updated_at = new Date();
+    await user.update(updatedData);
+    return res.status(200).json({
+      message: "User updated successfully",
+      user
+    });
+}
+  
+catch(error){
+    res.status(500).json({
+      message : "something went wrong while updating user info",
       error : error.message
     });
   }
@@ -250,6 +330,19 @@ async function deleteUser(req,res){
     });
   } catch(error){
     console.error("[User] Error deleting user:", error);
+  const id = parseInt(req.params.id);
+  const user = await User.findByPk(id);
+  if(!user){
+    return res.status(404).json({
+      message : "User not found"
+    });
+  }
+  await user.destroy();
+  res.status(200).json({
+    message : "User deleted successfully"
+  });
+
+  }catch(error){
     return res.status(500).json({
       message: "Error deleting user",
       error: error.message

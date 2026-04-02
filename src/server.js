@@ -2,7 +2,11 @@ require("dotenv").config();
 const http = require("http");
 const app = require("./app");
 
+<<<<<<< HEAD
 const port = process.env.PORT || 4000;
+=======
+const port = 4000;
+>>>>>>> deema
 
 const server = http.createServer(app);
 
