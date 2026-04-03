@@ -57,6 +57,14 @@ async function login(req, res) {
         message: "Invalid email or password"
       });
     }
+
+    // Check if account is active FIRST
+    if (!user.is_active) {
+      return res.status(403).json({
+        message: "Account is inactive"
+      });
+    }
+
     const isPasswordValid = await bcryptjs.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -64,26 +72,40 @@ async function login(req, res) {
         message: "Invalid email or password"
       });
     }
+
+    // Verify JWT_SECRET exists
+    if (!process.env.JWT_SECRET) {
+      console.error("❌ JWT_SECRET not configured in environment variables");
+      return res.status(500).json({
+        message: "Server configuration error",
+        error: "JWT_SECRET not configured"
+      });
+    }
+
     const token = jwt.sign(
       {
+        id: user.id,
         userId: user.id,
         email: user.email,
+        name: user.name,
         role: user.role
       },
       process.env.JWT_SECRET, 
-      { expiresIn: "2h" }
+      { expiresIn: "24h" }
     );
 
-  if (!user.is_active) {
-  return res.status(403).json({
-    message: "Account is inactive"
-  });
-}
     return res.status(200).json({
       message: "Authentication successful",
-      token
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
   }catch(error){
+    console.error("Login Error:", error);
     return res.status(500).json({
       message: "Error during authentication",
       error: error.message

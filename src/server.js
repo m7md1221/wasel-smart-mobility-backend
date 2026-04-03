@@ -2,6 +2,9 @@ require("dotenv").config();
 const http = require("http");
 const app = require("./app");
 
+// Initialize models and associations
+require("./models");
+
 const port = 4000;
 
 const server = http.createServer(app);
