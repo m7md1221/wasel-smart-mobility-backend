@@ -2,11 +2,8 @@ require("dotenv").config();
 const http = require("http");
 const app = require("./app");
 const sequelize = require("./config/database");
+const nodemailer = require("nodemailer"); // testing
 
-<<<<<<< HEAD
-// 🔹 تحديد البورت
-=======
->>>>>>> 9c0a8c0 (Feature 3: Route Estimation improvements - Add better API key handling, input validation, logging, and error messages)
 const port = process.env.PORT || 4000;
 
 // 🔹 إنشاء السيرفر
@@ -25,3 +22,27 @@ sequelize.authenticate()
   .catch(err => {
     console.error("Database connection error:", err);
   });
+
+////////////////////testing//////////////////////////////  
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD
+  }
+});
+
+const mailOptions = {
+  from: process.env.EMAIL,
+  to: "s12216999@stu.najah.edu",
+  subject: "Test Email from Wasel Smart Mobility",
+  text: "This is a test email sent from the Wasel Smart Mobility backend service."
+};
+
+transporter.sendMail(mailOptions, (error, info) => {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Email sent: " + info.response);
+  }
+});
