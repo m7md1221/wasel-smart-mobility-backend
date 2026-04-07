@@ -1,25 +1,22 @@
- const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer") ; 
+const NotificationService = require("./notificationService");
 
- const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: PROCESS.env.EMAIL,
-    pass: PROCESS.env.PASSWORD
+class EmailService extends NotificationService {
+   constructor() {
+    super();
+    this.transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user: process.env.EMAIL, pass: process.env.PASSWORD },
+    });
   }
-});
 
-const mailOptions={
- from : process.env.EMAIL,
- to:"s12216999@stu.najah.edu",
- subject:"Test Email from Wasel Smart Mobility",
- text:"This is a test email sent from the Wasel Smart Mobility backend service."
+    async send(userId, message) {
+    await this.transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: userId.EMAIL,
+      subject: "New Alert",
+      text: message
+    });
+  }
 }
-
-transporter.sendMail(mailOptions,(error,info)=>{
- if(error){
-  console.log(error);
- }
- else{
-  console.log("Email sent: "+info.response);
- }
-})
+module.exports = EmailService;
