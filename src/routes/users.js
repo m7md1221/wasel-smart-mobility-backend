@@ -10,10 +10,10 @@ const router = express.Router();
   router.post("/login",usersController.login);
 
 //protected (authentication and autherization)
-
+ router.put("/:id",authentication.checkAuth, authorization.authorizeRole("ADMIN","CITIZIN"),validate(updateUserSchema), usersController.updateUser);
+ 
 //admin only 
  router.post("/",authentication.checkAuth,authorization.authorizeRole("ADMIN"),validate(createUserSchema), usersController.addUser);
- router.put("/:id",authentication.checkAuth, authorization.authorizeRole("ADMIN"),validate(updateUserSchema), usersController.updateUser);
  router.delete("/:id",authentication.checkAuth,authorization.authorizeRole("ADMIN"),usersController.deleteUser);
 
 //admin and moderator 
