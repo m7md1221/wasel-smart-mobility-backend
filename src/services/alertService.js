@@ -8,24 +8,18 @@ class AlertService {
 
   async createAlert(data) {
     const { incident_id, category, message, latitude, longitude } = data;
-
-    // 1️⃣ Save alert in DB
     const alert = await Alert.create({ incident_id, category, message, latitude, longitude });
-
-    // 2️⃣ Find matching subscriptions
     const subscriptions = await Subscription.findAll({ where: { category } });
-
-    // 3️⃣ Filter by distance (geolocation)
     const usersToNotify = subscriptions.filter(sub => {
       if (!latitude || !longitude || !sub.latitude || !sub.longitude) return true;
       const distance = this.calculateDistance(latitude, longitude, sub.latitude, sub.longitude);
       return distance <= sub.radius_km;
     });
 
-    // 4️⃣ Send notifications
+
     for (const sub of usersToNotify) {
       for (const service of this.notificationServices) {
-        await service.send(sub.user_id, message);
+        await service.send(sub.user_id, message, "New Alert");
       }
     }
 
