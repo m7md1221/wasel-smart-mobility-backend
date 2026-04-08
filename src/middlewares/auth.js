@@ -1,9 +1,9 @@
-const jwt = require("jsonwebtoken"); 
+const jwt = require("jsonwebtoken");
 
-function checkAuth(req, res, next){
-  try{
+function checkAuth(req, res, next) {
+  try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader) {
       return res.status(401).json({
         message: "Missing authorization header",
@@ -21,9 +21,11 @@ function checkAuth(req, res, next){
 
     const token = parts[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decodedToken;
+
+    req.user = decodedToken; // فيها role
     next();
-  } catch(e){
+
+  } catch (e) {
     return res.status(401).json({
       message: "Invalid or expired token",
       error: e.message
@@ -31,5 +33,14 @@ function checkAuth(req, res, next){
   }
 }
 
-module.exports = { checkAuth }; 
+// ✅ الجديد 🔥
+function checkAdmin(req, res, next) {
+  if (req.user.role !== "ADMIN") {
+    return res.status(403).json({
+      message: "Forbidden"
+    });
+  }
+  next();
+}
 
+module.exports = { checkAuth, checkAdmin };
