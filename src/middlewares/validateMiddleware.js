@@ -1,12 +1,13 @@
-const validate = (compiledSchema) => {
-  return (req, res, next) => {
-    // compiledSchema is already a compiled validator function
-    const validationResult = compiledSchema(req.body);
+const { v } = require("../validators/userValidator");
 
-    if (validationResult !== true) {
+const validate = (schema) => {
+  return (req, res, next) => {
+    const validationResponse = v.validate(req.body, schema);
+
+    if (validationResponse !== true) {
       return res.status(400).json({
         message: "Validation failed",
-        errors: validationResult
+        errors: validationResponse
       });
     }
 

@@ -51,3 +51,77 @@ CREATE INDEX IF NOT EXISTS idx_reports_user_id ON reports(user_id);
 CREATE INDEX IF NOT EXISTS idx_reports_created_at ON reports(created_at);
 CREATE INDEX IF NOT EXISTS idx_report_votes_report_id ON report_votes(report_id);
 CREATE INDEX IF NOT EXISTS idx_moderation_logs_event_id ON moderation_logs(event_id);
+
+-- Foreign keys with delete behavior
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'fk_reports_user_id'
+  ) THEN
+    ALTER TABLE reports
+      ADD CONSTRAINT fk_reports_user_id
+      FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'fk_reports_duplicate_of'
+  ) THEN
+    ALTER TABLE reports
+      ADD CONSTRAINT fk_reports_duplicate_of
+      FOREIGN KEY (duplicate_of) REFERENCES reports(id)
+      ON DELETE SET NULL ON UPDATE CASCADE;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'fk_report_votes_report_id'
+  ) THEN
+    ALTER TABLE report_votes
+      ADD CONSTRAINT fk_report_votes_report_id
+      FOREIGN KEY (report_id) REFERENCES reports(id)
+      ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'fk_report_votes_user_id'
+  ) THEN
+    ALTER TABLE report_votes
+      ADD CONSTRAINT fk_report_votes_user_id
+      FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'fk_report_comments_report_id'
+  ) THEN
+    ALTER TABLE report_comments
+      ADD CONSTRAINT fk_report_comments_report_id
+      FOREIGN KEY (report_id) REFERENCES reports(id)
+      ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'fk_report_comments_user_id'
+  ) THEN
+    ALTER TABLE report_comments
+      ADD CONSTRAINT fk_report_comments_user_id
+      FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'fk_moderation_logs_performed_by'
+  ) THEN
+    ALTER TABLE moderation_logs
+      ADD CONSTRAINT fk_moderation_logs_performed_by
+      FOREIGN KEY (performed_by) REFERENCES users(id)
+      ON DELETE SET NULL ON UPDATE CASCADE;
+  END IF;
+END $$;
