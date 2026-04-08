@@ -1,49 +1,76 @@
 const Validator = require('fastest-validator');
+const incidents = require('../constants/incidents');
 const v = new Validator();
 
+const ALLOWED_CATEGORIES = [
+  incidents.CLOSURE,
+  incidents.DELAY,
+  incidents.ACCIDENT,
+  incidents.WEATHER_HAZARD
+];
+
 const createSubscriptionSchema = {
-$$strict: "remove",
+  $$strict: "remove",
 
-  category: { type: "string", optional: true, empty: false },
-  latitude: { type: "number", optional: true },
-  longitude: { type: "number", optional: true },
-  radius_km: { type: "number", optional: true, positive: true },
-
-  _check: {
-    type: "boolean",
-    optional: true,
-
+  category: {
+    type: "string",
+    optional: false,
+    empty: false,
     custom: (value, errors, schema, name, parent) => {
+      const normalized = String(value).trim().toUpperCase();
 
-      const hasCategory = !!parent.category;
-
-      const hasLocation =
-        parent.latitude !== undefined &&
-        parent.longitude !== undefined &&
-        parent.radius_km !== undefined;
-
-      // ❌ both provided
-      if (hasCategory && hasLocation) {
-        return [{
-          type: "forbidden",
+      if (!ALLOWED_CATEGORIES.includes(normalized)) {
+        errors.push({
+          type: "enumValue",
           field: "category",
-          message: "Can't choose both category and location subscription at once"
-        }];
+          actual: value,
+          expected: ALLOWED_CATEGORIES,
+          message: `Category must be one of: ${ALLOWED_CATEGORIES.join(", ")}`
+        });
       }
 
-      // ❌ none provided
-      if (hasCategory === undefined && hasLocation ===undefined) {
-        return [{
-          type: "required",
-          field: "category",
-          message: "Provide either category or location"
-        }];
-      }
-
-      return value; // ✅ valid
+      parent.category = normalized;
+      return normalized;
     }
+  },
+
+  latitude: {
+    type: "number",
+    optional: false
+  },
+
+  longitude: {
+    type: "number",
+    optional: false
+  },
+
+  radius_km: {
+    type: "number",
+    optional: false,
+    positive: true
+  },
+
+  $$custom(obj, errors) {
+    const hasCategory =
+      typeof obj.category === "string" && obj.category.trim() !== "";
+
+    const hasLocation =
+      obj.latitude !== undefined &&
+      obj.longitude !== undefined &&
+      obj.radius_km !== undefined;
+
+    if (!hasCategory || !hasLocation) {
+      errors.push({
+        type: "required",
+        field: "category",
+        message: "Subscription requires both category and location fields"
+      });
+    }
+
+    return obj;
   }
 };
+
 const updateCategorySubscriptionSchema = {
   $$strict: true,
 
