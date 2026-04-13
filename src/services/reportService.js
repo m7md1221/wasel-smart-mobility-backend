@@ -505,6 +505,33 @@ async function deleteComment(commentId, userId) {
   };
 }
 
+async function deleteReport(reportId, requester) {
+  const report = await Report.findByPk(reportId);
+  if (!report) {
+    throw {
+      status: 404,
+      message: "Report not found",
+    };
+  }
+
+  const isOwner = report.user_id === requester.id;
+  const isModeratorOrAdmin = ["ADMIN", "MODERATOR"].includes(requester.role);
+
+  if (!isOwner && !isModeratorOrAdmin) {
+    throw {
+      status: 403,
+      message: "You are not allowed to delete this report",
+    };
+  }
+
+  await report.destroy();
+
+  return {
+    message: "Report deleted successfully",
+    report_id: reportId,
+  };
+}
+
 module.exports = {
   submitReport,
   getReports,
@@ -516,6 +543,7 @@ module.exports = {
   addComment,
   getReportComments,
   deleteComment,
+  deleteReport,
   REPORT_CATEGORIES,
   RATE_LIMIT_REPORTS_PER_HOUR,
 };

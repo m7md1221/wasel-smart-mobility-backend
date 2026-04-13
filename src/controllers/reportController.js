@@ -359,6 +359,32 @@ async function deleteComment(req, res) {
   }
 }
 
+async function deleteReport(req, res) {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const { id } = req.params;
+
+    const result = await reportService.deleteReport(id, {
+      id: userId,
+      role: req.user?.role,
+    });
+
+    return res.status(200).json({
+      message: result.message,
+      data: result,
+    });
+  } catch (error) {
+    const statusCode = error.status || 500;
+    return res.status(statusCode).json({
+      message: error.message,
+    });
+  }
+}
+
 module.exports = {
   submitReport,
   getReports,
@@ -374,4 +400,5 @@ module.exports = {
   addComment,
   getComments,
   deleteComment,
+  deleteReport,
 };

@@ -70,6 +70,8 @@ router.post(
   reportController.moderateReport
 );
 
+router.delete("/:id", authentication.checkAuth, reportController.deleteReport);
+
 // Delete comment endpoint
 router.delete(
   "/:id/comments/:commentId",
