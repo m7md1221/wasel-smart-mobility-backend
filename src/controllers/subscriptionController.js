@@ -117,7 +117,7 @@ exports.deleteLocationSubscription = async (req, res) => {
 //update subscription category
 exports.updateCategorySubscription = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId; // get id from authentication
     const { subscriptionId, newCategory } = req.body;
 
     const updated = await subscriptionService.updateCategorySubscription(
@@ -148,7 +148,7 @@ exports.updateCategorySubscription = async (req, res) => {
 //update subscription location
 exports.updateLocationSubscription = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId; //get id from authentication 
 
     const {
       subscriptionId,

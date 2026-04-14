@@ -9,8 +9,15 @@ const ALLOWED_CATEGORIES = [
   incidents.WEATHER_HAZARD
 ];
 
-const createSubscriptionSchema = {
+const createAlertSchema = {
   $$strict: "remove",
+
+  incident_id: {
+    type: "number",
+    positive: true,
+    integer: true,
+    optional: false
+  },
 
   category: {
     type: "string",
@@ -34,58 +41,50 @@ const createSubscriptionSchema = {
     }
   },
 
+  message: {
+    type: "string",
+    optional: false,
+    empty: false,
+    min: 3,
+    max: 500
+  },
+
   latitude: {
     type: "number",
-    optional: false
+    optional: false,
+    min: -90,
+    max: 90
   },
 
   longitude: {
     type: "number",
-    optional: false
-  },
-
-  radius_km: {
-    type: "number",
     optional: false,
-    positive: true
+    min: -180,
+    max: 180
   },
 
   $$custom(obj, errors) {
+    const hasIncidentId = obj.incident_id !== undefined && obj.incident_id !== null;
     const hasCategory =
       typeof obj.category === "string" && obj.category.trim() !== "";
+    const hasMessage =
+      typeof obj.message === "string" && obj.message.trim() !== "";
+    const hasLatitude = obj.latitude !== undefined && obj.latitude !== null;
+    const hasLongitude = obj.longitude !== undefined && obj.longitude !== null;
 
-    const hasLocation =
-      obj.latitude !== undefined &&
-      obj.longitude !== undefined &&
-      obj.radius_km !== undefined;
-
-    if (!hasCategory || !hasLocation) {
+    if (!hasIncidentId || !hasCategory || !hasMessage || !hasLatitude || !hasLongitude) {
       errors.push({
         type: "required",
-        field: "category",
-        message: "Subscription requires both category and location fields"
+        field: "alert",
+        message: "Alert requires incident_id, category, message, latitude, and longitude"
       });
     }
+
     return obj;
   }
 };
 
-const updateCategorySubscriptionSchema = {
-  $$strict: true,
-  subscriptionId: { type: "number", positive: true },
-  newCategory: { type: "string", empty: false }
-};
-
-const updateLocationSubscriptionSchema = {
-  $$strict: true,
-  subscriptionId: { type: "number", positive: true },
-  newLatitude: { type: "number" },
-  newLongitude: { type: "number" },
-  newRadius: { type: "number", positive: true }
-};
 module.exports = {
   v,
-  createSubscriptionSchema,
-  updateCategorySubscriptionSchema,
-  updateLocationSubscriptionSchema
+  createAlertSchema
 };

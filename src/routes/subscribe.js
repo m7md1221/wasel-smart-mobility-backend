@@ -17,9 +17,9 @@ router.use(authentication.checkAuth);
 // delete user location subscription
  router.delete("/unsubscribe/location",authorization.authorizeRole("CITIZEN","ADMIN","MODERATOR"), subController.deleteLocationSubscription);
 // update user category subscription
- router.put("/update/Category",authorization.authorizeRole("CITIZEN"),validate(updateCategorySubscriptionSchema), subController.updateCategorySubscription);
+ router.put("/update/category",authorization.authorizeRole("CITIZEN"),validate(updateCategorySubscriptionSchema), subController.updateCategorySubscription);
 // update user location subscription
- router.put("/update/Location",authorization.authorizeRole("CITIZEN"),validate(updateLocationSubscriptionSchema), subController.updateLocationSubscription);
+ router.put("/update/location",authorization.authorizeRole("CITIZEN"),validate(updateLocationSubscriptionSchema), subController.updateLocationSubscription);
 //get user subscriptions 
 router.get("/showSubscriptions/:userId",authorization.authorizeRole("ADMIN","MODERATOR","CITIZEN"), subController.getUserSubscriptions);
 
