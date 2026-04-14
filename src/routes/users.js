@@ -15,7 +15,8 @@ const router = express.Router();
 //admin only 
  router.post("/",authentication.checkAuth,authorization.authorizeRole("ADMIN"),validate(createUserSchema), usersController.addUser);
  router.delete("/:id",authentication.checkAuth,authorization.authorizeRole("ADMIN"),usersController.deleteUser);
-
+router.post("/deactivate/:id",authentication.checkAuth,authorization.authorizeRole("ADMIN"),usersController.deactivateUser);
+router.post("/activate/:id",authentication.checkAuth,authorization.authorizeRole("ADMIN"),usersController.activateUser);
 //admin and moderator 
  router.get("/:id",authentication.checkAuth,authorization.authorizeRole("ADMIN","MODERATOR"),usersController.showUserInfo);
  router.get("/",authentication.checkAuth,authorization.authorizeRole("ADMIN","MODERATOR"),usersController.showAllUsers);
