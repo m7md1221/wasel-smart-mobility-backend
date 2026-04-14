@@ -4,8 +4,7 @@ const authorizeRole = (...allowedRoles) => {
     const userRole = req.user?.role;
 
     if (!userRole) {
-      return res.status(401).json({
-        
+      return res.status(401).json({        
         message: "Unauthorized: No user data or role found"
       });
     }

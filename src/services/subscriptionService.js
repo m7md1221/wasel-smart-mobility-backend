@@ -94,6 +94,7 @@ class SubscriptionService {
 
   return subscription;
 }
+//update location subscription
 async updateLocationSubscription(
   userId,
   subscriptionId,
