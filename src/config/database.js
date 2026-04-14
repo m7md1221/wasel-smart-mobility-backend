@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-require("dotenv").config({ path: require("path").resolve(__dirname, "../../.env") });
-=======
- require("dotenv").config();
->>>>>>> deema
+require("dotenv").config();
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(

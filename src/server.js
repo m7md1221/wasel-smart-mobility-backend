@@ -1,20 +1,20 @@
 require("dotenv").config();
 const http = require("http");
 const app = require("./app");
+const sequelize = require("./config/database");
 
-<<<<<<< HEAD
+// 🔹 تحديد البورت
 const port = process.env.PORT || 4000;
-=======
-const port = 4000;
->>>>>>> deema
 
+// 🔹 إنشاء السيرفر
 const server = http.createServer(app);
 
+// 🔹 تشغيل السيرفر
 server.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
 
-const sequelize = require("./config/database");
+// 🔹 الاتصال بقاعدة البيانات
 sequelize.authenticate()
   .then(() => {
     console.log("Database connected successfully");
@@ -22,6 +22,3 @@ sequelize.authenticate()
   .catch(err => {
     console.error("Database connection error:", err);
   });
-
-
-  
