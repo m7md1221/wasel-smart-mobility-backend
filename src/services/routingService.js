@@ -1,6 +1,8 @@
 const crypto = require("crypto");
+const { Op } = require("sequelize");
 const ExternalApiCache = require("../models/externalApiModel");
 const Checkpoint = require("../models/checkpointModel");
+const Incident = require("../models/incidentsModel");
 
 const memoryCache = new Map();
 const PROVIDER_NAME = "OPENROUTESERVICE";
@@ -8,6 +10,48 @@ const DEFAULT_PROVIDER_URL = "https://api.openrouteservice.org";
 const DEFAULT_TIMEOUT_MS = 5000;
 const DEFAULT_CACHE_TTL_SECONDS = 120;
 const CHECKPOINT_RADIUS_KM = 0.35;
+const INCIDENT_DEFAULT_RADIUS_KM = 0.5;
+
+// Map incident severity to an avoidance radius (km). Falls back to the default.
+const INCIDENT_SEVERITY_RADIUS_KM = {
+  low: 0.3,
+  medium: 0.5,
+  high: 1.0,
+  critical: 1.5
+};
+
+async function getActiveIncidentAreas() {
+  try {
+    const incidents = await Incident.findAll({
+      where: {
+        status: { [Op.in]: ["open", "verified"] },
+        latitude: { [Op.ne]: null },
+        longitude: { [Op.ne]: null }
+      }
+    });
+
+    return incidents.map((incident) => {
+      const severityKey = (incident.severity || "").toLowerCase();
+      const radiusKm =
+        INCIDENT_SEVERITY_RADIUS_KM[severityKey] || INCIDENT_DEFAULT_RADIUS_KM;
+
+      return {
+        center: {
+          lat: incident.latitude,
+          lng: incident.longitude
+        },
+        radiusKm,
+        source: "incident",
+        incidentId: incident.id,
+        category: incident.category || null,
+        severity: incident.severity || null,
+        title: incident.title || null
+      };
+    });
+  } catch (_error) {
+    return [];
+  }
+}
 
 function getProviderBaseUrl() {
   return process.env.ROUTING_PROVIDER_URL || DEFAULT_PROVIDER_URL;
@@ -149,7 +193,12 @@ function routeViolatesAreas(routeCoordinates, avoidAreas) {
       violatedAreas.push({
         index,
         radiusKm,
-        center: area.center
+        center: area.center,
+        source: area.source || "user",
+        incidentId: area.incidentId || null,
+        category: area.category || null,
+        severity: area.severity || null,
+        title: area.title || null
       });
     }
   }
@@ -317,13 +366,32 @@ async function estimateRoute({ from, to, constraints }) {
     const cached = await getCachedResponse(requestHash);
     if (cached) {
       console.log(`[Routing] Cache hit for route`);
-      return {
+      const cachedPayload = {
         ...cached,
         metadata: {
           ...cached.metadata,
           source: "cache"
         }
       };
+
+      const cachedViolations = cached.metadata?.violations || {};
+      const hasCachedViolations =
+        (cachedViolations.checkpoints || []).length > 0 ||
+        (cachedViolations.areas || []).length > 0;
+
+      if (hasCachedViolations) {
+        console.info(`[Routing] Cached route violates constraints.`);
+        return {
+          error: {
+            errorType: "CONSTRAINT_VIOLATION",
+            message: "Route violates selected constraints",
+            details: cachedViolations
+          },
+          payload: cachedPayload
+        };
+      }
+
+      return cachedPayload;
     }
   } catch (cacheError) {
     console.warn(`[Routing] Cache retrieval error (continuing):`, cacheError.message);
@@ -350,12 +418,18 @@ async function estimateRoute({ from, to, constraints }) {
 
   const routeCoordinates = route.geometry.coordinates;
   const avoidCheckpointIds = constraints?.avoidCheckpointIds || [];
-  const avoidAreas = constraints?.avoidAreas || [];
+  const userAvoidAreas = (constraints?.avoidAreas || []).map((area) => ({
+    ...area,
+    source: "user"
+  }));
 
   try {
+    const incidentAvoidAreas = await getActiveIncidentAreas();
+    const mergedAvoidAreas = [...userAvoidAreas, ...incidentAvoidAreas];
+
     const checkpointsById = await getCheckpointMapByIds(avoidCheckpointIds);
     const violatedCheckpoints = routeViolatesCheckpoints(routeCoordinates, checkpointsById, avoidCheckpointIds);
-    const violatedAreas = routeViolatesAreas(routeCoordinates, avoidAreas);
+    const violatedAreas = routeViolatesAreas(routeCoordinates, mergedAvoidAreas);
 
     const violatesConstraints = violatedCheckpoints.length > 0 || violatedAreas.length > 0;
 
@@ -367,10 +441,15 @@ async function estimateRoute({ from, to, constraints }) {
         provider: PROVIDER_NAME,
         source: "provider",
         requestedAt: new Date().toISOString(),
-        factors: ["traffic-model-from-provider", "checkpoint-and-area-constraint-check"],
+        factors: [
+          "traffic-model-from-provider",
+          "checkpoint-and-area-constraint-check",
+          "active-incident-avoidance"
+        ],
         constraintsApplied: {
           avoidCheckpointIds,
-          avoidAreas
+          avoidAreas: userAvoidAreas,
+          activeIncidentsConsidered: incidentAvoidAreas.length
         },
         violations: {
           checkpoints: violatedCheckpoints,
