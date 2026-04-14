@@ -1,6 +1,8 @@
 const crypto = require("crypto");
+const { Op } = require("sequelize");
 const ExternalApiCache = require("../models/externalApiModel");
 const Checkpoint = require("../models/checkpointModel");
+const Incident = require("../models/incidentsModel");
 
 const memoryCache = new Map();
 const PROVIDER_NAME = "OPENROUTESERVICE";
@@ -8,6 +10,47 @@ const DEFAULT_PROVIDER_URL = "https://api.openrouteservice.org";
 const DEFAULT_TIMEOUT_MS = 5000;
 const DEFAULT_CACHE_TTL_SECONDS = 120;
 const CHECKPOINT_RADIUS_KM = 0.35;
+const INCIDENT_DEFAULT_RADIUS_KM = 0.5;
+
+const INCIDENT_SEVERITY_RADIUS_KM = {
+  low: 0.3,
+  medium: 0.5,
+  high: 1.0,
+  critical: 1.5
+};
+
+async function getActiveIncidentAreas() {
+  try {
+    const incidents = await Incident.findAll({
+      where: {
+        status: { [Op.in]: ["open", "verified"] },
+        latitude: { [Op.ne]: null },
+        longitude: { [Op.ne]: null }
+      }
+    });
+
+    return incidents.map((incident) => {
+      const severityKey = (incident.severity || "").toLowerCase();
+      const radiusKm =
+        INCIDENT_SEVERITY_RADIUS_KM[severityKey] || INCIDENT_DEFAULT_RADIUS_KM;
+
+      return {
+        center: {
+          lat: incident.latitude,
+          lng: incident.longitude
+        },
+        radiusKm,
+        source: "incident",
+        incidentId: incident.id,
+        category: incident.category || null,
+        severity: incident.severity || null,
+        title: incident.title || null
+      };
+    });
+  } catch {
+    return [];
+  }
+}
 
 function getProviderBaseUrl() {
   return process.env.ROUTING_PROVIDER_URL || DEFAULT_PROVIDER_URL;
@@ -63,7 +106,6 @@ async function getCachedResponse(hash) {
 
 async function setCachedResponse(hash, data, ttl) {
   const expiresAt = Date.now() + ttl * 1000;
-
   memoryCache.set(hash, { data, expiresAt });
 
   try {
@@ -104,13 +146,29 @@ async function getCheckpointMapByIds(ids) {
   }, new Map());
 }
 
-function routeViolatesAreas(coords, areas) {
-  return areas.flatMap((area, i) => {
-    const hit = coords.some(([lng, lat]) =>
-      haversineDistanceKm(lat, lng, area.center.lat, area.center.lng) <= area.radiusKm
-    );
-    return hit ? [{ index: i, ...area }] : [];
-  });
+function routeViolatesAreas(routeCoordinates, avoidAreas) {
+  const violatedAreas = [];
+
+  for (const [index, area] of avoidAreas.entries()) {
+    const intersects = routeCoordinates.some(([lng, lat]) => {
+      return haversineDistanceKm(lat, lng, area.center.lat, area.center.lng) <= area.radiusKm;
+    });
+
+    if (intersects) {
+      violatedAreas.push({
+        index,
+        radiusKm: area.radiusKm,
+        center: area.center,
+        source: area.source || "user",
+        incidentId: area.incidentId || null,
+        category: area.category || null,
+        severity: area.severity || null,
+        title: area.title || null
+      });
+    }
+  }
+
+  return violatedAreas;
 }
 
 function routeViolatesCheckpoints(coords, map, ids) {
@@ -158,8 +216,6 @@ async function fetchRouteFromProvider(from, to, timeoutMs) {
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    console.log("[Routing] Fetching route...");
-
     const res = await fetch(req.url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -187,7 +243,6 @@ async function fetchRouteFromProvider(from, to, timeoutMs) {
 }
 
 async function estimateRoute({ from, to, constraints }) {
-  // validation
   if (!from || from.lat === undefined || from.lng === undefined) {
     return { error: { errorType: "INVALID_INPUT", message: "Invalid from" } };
   }
@@ -196,47 +251,71 @@ async function estimateRoute({ from, to, constraints }) {
     return { error: { errorType: "INVALID_INPUT", message: "Invalid to" } };
   }
 
-  const timeout = Number(process.env.ROUTING_TIMEOUT_MS || DEFAULT_TIMEOUT_MS);
+  const timeoutMs = Number(process.env.ROUTING_TIMEOUT_MS || DEFAULT_TIMEOUT_MS);
   const ttl = Number(process.env.ROUTING_CACHE_TTL_SECONDS || DEFAULT_CACHE_TTL_SECONDS);
 
-  const hash = buildCacheKey({ from, to, constraints });
+  const requestHash = buildCacheKey({ from, to, constraints });
 
-  const cached = await getCachedResponse(hash);
+  const cached = await getCachedResponse(requestHash);
   if (cached) {
-    return { ...cached, metadata: { ...cached.metadata, source: "cache" } };
+    return {
+      ...cached,
+      metadata: { ...cached.metadata, source: "cache" }
+    };
   }
 
-  const provider = await fetchRouteFromProvider(from, to, timeout);
+  const provider = await fetchRouteFromProvider(from, to, timeoutMs);
   if (provider.errorType) return { error: provider };
 
   const route = normalizeProviderRouteResponse(provider.data);
   if (!route) return { error: { errorType: "NO_ROUTE" } };
 
-  const ids = constraints?.avoidCheckpointIds || [];
-  const areas = constraints?.avoidAreas || [];
+  const routeCoordinates = route.geometry.coordinates;
 
-  const map = await getCheckpointMapByIds(ids);
-  const violatedCP = routeViolatesCheckpoints(route.geometry.coordinates, map, ids);
-  const violatedAreas = routeViolatesAreas(route.geometry.coordinates, areas);
+  const avoidCheckpointIds = constraints?.avoidCheckpointIds || [];
+  const userAvoidAreas = (constraints?.avoidAreas || []).map(a => ({
+    ...a,
+    source: "user"
+  }));
+
+  const incidentAvoidAreas = await getActiveIncidentAreas();
+  const mergedAvoidAreas = [...userAvoidAreas, ...incidentAvoidAreas];
+
+  const checkpointsById = await getCheckpointMapByIds(avoidCheckpointIds);
+
+  const violatedCheckpoints = routeViolatesCheckpoints(
+    routeCoordinates,
+    checkpointsById,
+    avoidCheckpointIds
+  );
+
+  const violatedAreas = routeViolatesAreas(routeCoordinates, mergedAvoidAreas);
+
+  const violates = violatedCheckpoints.length || violatedAreas.length;
 
   const payload = {
-    estimatedDistanceMeters: route.distance,
-    estimatedDurationSeconds: route.duration,
+    estimatedDistanceMeters: route.distance || null,
+    estimatedDurationSeconds: route.duration || null,
     routeGeometry: route.geometry,
     metadata: {
       provider: PROVIDER_NAME,
       source: "provider",
       requestedAt: new Date().toISOString(),
+      constraintsApplied: {
+        avoidCheckpointIds,
+        avoidAreas: userAvoidAreas,
+        activeIncidentsConsidered: incidentAvoidAreas.length
+      },
       violations: {
-        checkpoints: violatedCP,
+        checkpoints: violatedCheckpoints,
         areas: violatedAreas
       }
     }
   };
 
-  await setCachedResponse(hash, payload, ttl);
+  await setCachedResponse(requestHash, payload, ttl);
 
-  if (violatedCP.length || violatedAreas.length) {
+  if (violates) {
     return {
       error: {
         errorType: "CONSTRAINT_VIOLATION",
