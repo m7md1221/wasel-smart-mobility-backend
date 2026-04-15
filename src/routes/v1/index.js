@@ -18,7 +18,7 @@ router.use("/incidents", incidentRouter);
 router.use("/routes", routingRouter); // old path
 router.use("/", routingRouter); // enables /estimate
 
-// alert subscriptions + alerts
+// alerts + subscriptions
 router.use("/alertSubscriptions", subscribeRouter);
 router.use("/alerts", alertsRouter);
 
