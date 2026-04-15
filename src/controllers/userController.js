@@ -73,7 +73,7 @@ async function login(req, res) {
     );
 
     return res.status(200).json({
-      message: "Authentication successful",
+      message: "Authentication successful,your token: ",
       token
     });
 
@@ -177,7 +177,7 @@ async function showAllUsers(req,res){
   }
 }
 
-// ✅ UPDATE
+
 async function updateUser(req, res) {
   try {
       const id = parseInt(req.params.id);
@@ -212,7 +212,7 @@ async function updateUser(req, res) {
     
     return res.status(200).json({
       message: "User updated successfully",
-      user: userResponse: userResponse
+      user: userResponse
     });
   } catch(error){
     console.error("[User] Error updating user:", error);
