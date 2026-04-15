@@ -3,49 +3,40 @@ const roles = require('../constants/roles');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-async function signup(req,res){
-  const userEmail = await User.findOne({ where: { email: req.body.email } });
-  if (userEmail) {
-    return res.status(400).json({
-      message: "User with this email already exists"
-    });
-  }
+
+async function signup(req, res) {
   try {
-    const {
-      name,
-      email,
-      password,
-      role,
-      confidence_score,
-      is_active,
-      is_authorized
-    } = req.body;
-     const salt = await bcryptjs.genSalt(10);
+    const { name, email, password, role } = req.body;
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User with this email already exists"
+      });
+    }
+
+    const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
-const user = await User.create({
+    await User.create({
       name,
       email,
-      password: hashedPassword, 
-      role,
-      confidence_score,
-      is_active,
-      is_authorized
+      password: hashedPassword,
+      role: role || roles.ADMIN
     });
 
     return res.status(201).json({
       message: "User created successfully"
     });
 
-}catch(error){
-  res.status(500).json({
-     message: "Error creating user",
-      error: error.message,
-      stack: error.stack
-  })
-
-}
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error creating user",
+      error: error.message
+    });
   }
+}
+
 
 async function login(req, res) {
   try {
@@ -57,13 +48,20 @@ async function login(req, res) {
         message: "Invalid email or password"
       });
     }
-    const isPasswordValid = await bcryptjs.compare(password, user.password);
 
-    if (!isPasswordValid) {
+    const isValid = await bcryptjs.compare(password, user.password);
+    if (!isValid) {
       return res.status(401).json({
         message: "Invalid email or password"
       });
     }
+
+    if (!user.is_active) {
+      return res.status(403).json({
+        message: "Account is inactive"
+      });
+    }
+
     const token = jwt.sign(
       {
         userId: user.id,
@@ -74,22 +72,18 @@ async function login(req, res) {
       { expiresIn: "2h" }
     );
 
-  if (!user.is_active) {
-  return res.status(403).json({
-    message: "Account is inactive"
-  });
-}
     return res.status(200).json({
       message: "Authentication successful",
       token
     });
-  }catch(error){
+
+  } catch (error) {
     return res.status(500).json({
       message: "Error during authentication",
       error: error.message
     });
   }
-} 
+}
 
 async function addUser(req, res) {
   try {
@@ -127,7 +121,8 @@ async function addUser(req, res) {
     }
     res.status(500).json({
       message: "Error creating user",
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 }
@@ -181,20 +176,17 @@ async function showAllUsers(req,res){
     });
   }
 }
-async function updateUser(req,res){
-  try{
-    const id = parseInt(req.params.id);
+
+// ✅ UPDATE
+async function updateUser(req, res) {
+  try {
+      const id = parseInt(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({
         message: "Invalid user ID"
       });
     }
-    if (Object.keys(req.body).length === 0) {
-      return res.status(400).json({
-        message: "No data provided for update"
-      });
-    }
-    const user = await User.findByPk(id);
+         const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({
         message: "User not found"
@@ -220,7 +212,7 @@ async function updateUser(req,res){
     
     return res.status(200).json({
       message: "User updated successfully",
-      user: userResponse
+      user: userResponse: userResponse
     });
   } catch(error){
     console.error("[User] Error updating user:", error);
@@ -231,25 +223,29 @@ async function updateUser(req,res){
   }
 }
 
-async function deleteUser(req,res){
-  try{
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
+
+async function deleteUser(req, res) {
+  try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
       return res.status(400).json({
         message: "Invalid user ID"
       });
     }
     const user = await User.findByPk(id);
-    if(!user){
-      return res.status(404).json({
-        message : "User not found"
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found"
+        });
+      }
+
+      await user.destroy();
+  
+    return res.status(200).json({
+        message: "User deleted successfully"
       });
-    }
-    await user.destroy();
-    res.status(200).json({
-      message : "User deleted successfully"
-    });
-  } catch(error){
+  }  catch (error) {
     console.error("[User] Error deleting user:", error);
     return res.status(500).json({
       message: "Error deleting user",
