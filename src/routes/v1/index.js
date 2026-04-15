@@ -7,6 +7,7 @@ const checkpointRouter = require("../checkpoints");
 const incidentRouter = require("../incidents");
 const routingRouter = require("../routes");
 const subscribeRouter = require("../subscribe");
+const alertsRouter = require("../alerts");
 
 // routes
 router.use("/users", userRouter);
@@ -17,8 +18,9 @@ router.use("/incidents", incidentRouter);
 router.use("/routes", routingRouter); // old path
 router.use("/", routingRouter); // enables /estimate
 
-// alert subscriptions
+// alert subscriptions + alerts
 router.use("/alertSubscriptions", subscribeRouter);
+router.use("/alerts", alertsRouter);
 
 // healthcheck
 router.get("/health", (req, res) => {

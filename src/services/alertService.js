@@ -31,7 +31,7 @@ class AlertService {
         sub.latitude == null ||
         sub.longitude == null
       ) {
-        return true;
+        return false;
       }
 
       const distance = this.calculateDistance(
@@ -43,10 +43,16 @@ class AlertService {
 
       return distance <= sub.radius_km;
     });
+    const emailBody = `
+A new alert has been created.
 
+Category: ${category}
+Message: ${message}
+Location: ${latitude}, ${longitude}
+`; 
     for (const sub of usersToNotify) {
       try {
-        await this.notificationService.send(sub.user_id, message, "New Alert");
+        await this.notificationService.send(sub.user_id, emailBody, "New Alert");
       } catch (err) {
         console.error(`Failed to notify user ${sub.user_id}: ${err.message}`);
       }

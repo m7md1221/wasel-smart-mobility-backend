@@ -1,4 +1,3 @@
-
 const axios = require("axios");
 const NotificationService = require("./notificationService");
 
@@ -10,11 +9,7 @@ class TelegramService extends NotificationService {
   }
 
   async send(userId, message) {
-    await axios.post(`https://api.telegram.org/bot${this.token}/sendMessage`, {
-      chat_id: this.chatId, // could map userId → chatId
-      text: message
-    });
+   
+    }
   }
-}
-
 module.exports = TelegramService;
