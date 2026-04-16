@@ -12,7 +12,7 @@ router.get("/:id", ctrl.getIncidentById);
 // 🔹 Any logged-in user
 router.post("/", checkAuth, ctrl.createIncident);
 
-// 🔹 Admin + Moderator only (UPDATE STATUS باستخدام PUT)
+// 🔹 Admin + Moderator only (UPDATE STATUS)
 router.put(
   "/:id/status",
   checkAuth,
