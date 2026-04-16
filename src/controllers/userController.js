@@ -1,5 +1,5 @@
 const User = require('../models/userModel');
-const roles = require('../constants/roles'); 
+const roles = require('../constants/roles');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -203,10 +203,10 @@ async function updateUser(req, res) {
         updatedData[key] = req.body[key];
       }
     }
-    
+
     updatedData.updated_at = new Date();
     await user.update(updatedData);
-    
+
     const userResponse = user.toJSON();
     delete userResponse.password;
     
