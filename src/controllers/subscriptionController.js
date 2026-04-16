@@ -6,7 +6,7 @@ exports.createSubscription = async (req, res) => {
   try {
     const userId = req.user.userId; // get id from authentication
     const { category, latitude, longitude, radius_km } = req.body;
-
+   
     const sub = await subscriptionService.createSubscription(
       userId,
       category,

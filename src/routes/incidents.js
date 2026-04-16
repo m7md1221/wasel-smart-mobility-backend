@@ -12,6 +12,6 @@ router.get("/:id", ctrl.getIncidentById);
 router.post("/", checkAuth, ctrl.createIncident);
 
 // Admin + Moderator only
-router.patch("/:id/status", checkAuth, authorizeRole("ADMIN", "MODERATOR"), ctrl.updateIncidentStatus);
+router.put("/:id/status", checkAuth, authorizeRole("ADMIN", "MODERATOR"), ctrl.updateIncidentStatus);
 
 module.exports = router;

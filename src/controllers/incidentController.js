@@ -2,6 +2,10 @@ const { Op } = require("sequelize");
 const sequelize = require("../config/database");
 const Incident = require("../models/incidentsModel");
 const ModerationLog = require("../models/moderationLogsModel");
+const AlertService = require("../services/alertService");
+const EmailService = require("../services/emailService");
+
+const alertService = new AlertService(new EmailService());
 
 // GET /api/v1/incidents
 async function getAllIncidents(req, res) {
@@ -117,7 +121,8 @@ async function updateIncidentStatus(req, res) {
 
     const incident = await Incident.findByPk(req.params.id);
     if (!incident) return res.status(404).json({ message: "Incident not found" });
-
+    //saving old status 
+    const oldStatus = incident.status;
     const updateData = { status, updated_at: new Date() };
     if (status === "closed") updateData.closed_at = new Date();
     if (["verified", "closed"].includes(status)) updateData.verified_by = req.user.userId;
@@ -133,6 +138,16 @@ async function updateIncidentStatus(req, res) {
       reason: reason || null,
       created_at: new Date(),
     });
+   //alert creation for newly verified incidents
+   if (oldStatus !== "verified" && status === "verified") {
+      await alertService.createAlert({
+        incident_id: incident.id,
+        category: incident.category,
+        message: `Incident "${incident.title}" has been verified`,
+        latitude: incident.latitude,
+        longitude: incident.longitude
+      });
+    }
 
     return res.status(200).json({ message: "Incident status updated", data: incident });
   } catch (error) {

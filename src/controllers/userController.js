@@ -73,7 +73,7 @@ async function login(req, res) {
     );
 
     return res.status(200).json({
-      message: "Authentication successful,your token: ",
+      message: "Authentication successful",
       token
     });
 

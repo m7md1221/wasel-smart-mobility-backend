@@ -2,7 +2,8 @@
 
 class SubscriptionService {
   async createSubscription(userId, category, latitude, longitude, radius_km) { 
-     if ( !category || latitude == null || longitude == null || radius_km == null)
+     const normalizedCategory = String(category || "").trim().toUpperCase();
+     if ( !normalizedCategory || latitude == null || longitude == null || radius_km == null)
    {throw new Error("Invalid subscription, provide category and geographic details");}
       const existingSubscription = await Subscription.findOne({
     where: {
@@ -20,7 +21,7 @@ class SubscriptionService {
 
   return await Subscription.create({
     user_id: userId,
-    category,
+    category : normalizedCategory,
     latitude,
     longitude,
     radius_km
@@ -44,10 +45,11 @@ class SubscriptionService {
   
   //delete subscription for a user based on category 
   async deleteCategorySubscription(userId, category) {
+    const normalizedCategory = String(category || "").trim().toUpperCase();
     return await Subscription.destroy({
       where: {
         user_id: userId,
-        category: category
+        category: normalizedCategory
       }
     });
   }
@@ -66,6 +68,7 @@ class SubscriptionService {
 
   //update category subscription 
   async updateCategorySubscription(userId, subscriptionId, newCategory) {
+     const normalizedCategory = String(newCategory || "").trim().toUpperCase();
   const subscription = await Subscription.findOne({
     where: {
       id: subscriptionId,
@@ -74,22 +77,22 @@ class SubscriptionService {
   });
 
   if (!subscription) return null;
-  if (!subscription.category) {
+  if (!subscription.normalizedCategory) {
     throw new Error("This is not a category subscription");
   }
-   if (subscription.category === newCategory) {
+   if (subscription.category === normalizedCategory) {
     throw new Error("Subscription is already set to this category");
   }
    const existingSubscription = await Subscription.findOne({
     where: {
       user_id: userId,
-      category: newCategory
+      category: normalizedCategory
     }
   });
   if (existingSubscription) {
     throw new Error("User is already subscribed to this category");
   }
-  subscription.category = newCategory;
+  subscription.category = normalizedCategory;
   await subscription.save();
 
   return subscription;
