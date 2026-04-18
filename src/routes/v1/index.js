@@ -5,7 +5,6 @@ const router = express.Router();
 const userRouter = require("../users");
 const checkpointRouter = require("../checkpoints");
 const incidentRouter = require("../incidents");
-const routingRouter = require("../routes");
 const subscribeRouter = require("../subscribe");
 const alertsRouter = require("../alerts");
 
@@ -13,10 +12,6 @@ const alertsRouter = require("../alerts");
 router.use("/users", userRouter);
 router.use("/checkpoints", checkpointRouter);
 router.use("/incidents", incidentRouter);
-
-// routing
-router.use("/routes", routingRouter); // old path
-router.use("/", routingRouter); // enables /estimate
 
 // alerts + subscriptions
 router.use("/alertSubscriptions", subscribeRouter);

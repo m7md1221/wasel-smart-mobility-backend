@@ -8,7 +8,7 @@ const v1Routes = require("./v1");
 
 const router = express.Router();
 
-// Route estimation
+// ✅ Route estimation
 router.post(
   "/estimate",
   authentication.checkAuth,
@@ -16,7 +16,7 @@ router.post(
   routeController.estimateRoute
 );
 
-// API v1 routes
+// ✅ API v1
 router.use("/v1", v1Routes);
 
 module.exports = router;
