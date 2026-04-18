@@ -3,7 +3,10 @@ const http = require("http");
 const app = require("./app");
 const sequelize = require("./config/database");
 
+<<<<<<< HEAD
 // 🔹 تحديد البورت
+=======
+>>>>>>> 9c0a8c0 (Feature 3: Route Estimation improvements - Add better API key handling, input validation, logging, and error messages)
 const port = process.env.PORT || 4000;
 
 // 🔹 إنشاء السيرفر

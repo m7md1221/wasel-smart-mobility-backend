@@ -150,6 +150,7 @@ function normalizeProviderRouteResponse(providerData) {
 }
 
 function buildProviderRequest(from, to) {
+<<<<<<< HEAD
   const base = getProviderBaseUrl();
   let endpoint = `${base}/v2/directions/driving-car/geojson`;
 
@@ -157,6 +158,16 @@ function buildProviderRequest(from, to) {
     endpoint += `?api_key=${encodeURIComponent(process.env.ORS_API_KEY)}`;
   }
 
+=======
+  const providerBaseUrl = getProviderBaseUrl();
+  let endpoint = `${providerBaseUrl}/v2/directions/driving-car/geojson`;
+  
+  // Add API key as query param if available (OpenRouteService standard method)
+  if (process.env.ORS_API_KEY) {
+    endpoint += `?api_key=${encodeURIComponent(process.env.ORS_API_KEY)}`;
+  }
+  
+>>>>>>> 9c0a8c0 (Feature 3: Route Estimation improvements - Add better API key handling, input validation, logging, and error messages)
   return {
     endpoint,
     method: "POST",
@@ -171,6 +182,7 @@ async function fetchRouteFromProvider(from, to, timeoutMs) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
+<<<<<<< HEAD
   try {
     const res = await fetch(req.endpoint, {
       method: req.method,
@@ -191,18 +203,99 @@ async function fetchRouteFromProvider(from, to, timeoutMs) {
   } catch (e) {
     if (e.name === "AbortError") return { errorType: "TIMEOUT" };
     return { errorType: "NETWORK_ERROR", message: e.message };
+=======
+  const headers = {
+    "Content-Type": "application/json",
+    "User-Agent": "Wasel-Smart-Mobility/1.0"
+  };
+
+  try {
+    console.log(`[Routing] Fetching route from provider...`);
+    const response = await fetch(requestConfig.endpoint, {
+      method: requestConfig.method,
+      headers,
+      body: requestConfig.body,
+      signal: controller.signal
+    });
+
+    if (response.status === 429) {
+      const retryAfter = response.headers.get("retry-after");
+      console.warn(`[Routing] Rate limit hit. Retry after: ${retryAfter}s`);
+      return {
+        errorType: "RATE_LIMIT",
+        retryAfter,
+        message: "Routing provider rate limited. Please retry after " + (retryAfter || "30") + " seconds."
+      };
+    }
+
+    if (!response.ok) {
+      let errorDetails = "";
+      try {
+        const errorData = await response.json();
+        errorDetails = JSON.stringify(errorData);
+      } catch (_) {
+        errorDetails = await response.text().catch(() => "No details available");
+      }
+      
+      console.error(`[Routing] Provider error ${response.status}: ${errorDetails}`);
+      return {
+        errorType: "PROVIDER_ERROR",
+        status: response.status,
+        message: `Routing provider returned status ${response.status}`,
+        details: errorDetails
+      };
+    }
+
+    const data = await response.json();
+    console.log(`[Routing] Route fetched successfully. Distance: ${data?.features?.[0]?.properties?.summary?.distance}m`);
+    return { data };
+  } catch (error) {
+    if (error.name === "AbortError") {
+      console.error(`[Routing] Request timeout after ${timeoutMs}ms`);
+      return { 
+        errorType: "TIMEOUT",
+        message: `Routing provider request timeout after ${timeoutMs}ms`
+      };
+    }
+
+    console.error(`[Routing] Network error:`, error.message);
+    return {
+      errorType: "NETWORK_ERROR",
+      message: error.message
+    };
+>>>>>>> 9c0a8c0 (Feature 3: Route Estimation improvements - Add better API key handling, input validation, logging, and error messages)
   } finally {
     clearTimeout(timeout);
   }
 }
 
 async function estimateRoute({ from, to, constraints }) {
+<<<<<<< HEAD
   if (!from || from.lat === undefined || from.lng === undefined) {
     return { error: { errorType: "INVALID_INPUT", message: "Invalid 'from'" } };
   }
 
   if (!to || to.lat === undefined || to.lng === undefined) {
     return { error: { errorType: "INVALID_INPUT", message: "Invalid 'to'" } };
+=======
+  // Validate input
+  if (!from || !from.lat || from.lng === undefined) {
+    return {
+      error: {
+        errorType: "INVALID_INPUT",
+        message: "Invalid 'from' coordinates. Expected {lat: number, lng: number}"
+      }
+    };
+  }
+  
+  if (!to || !to.lat || to.lng === undefined) {
+    return {
+      error: {
+        errorType: "INVALID_INPUT",
+        message: "Invalid 'to' coordinates. Expected {lat: number, lng: number}"
+      }
+    };
+>>>>>>> 9c0a8c0 (Feature 3: Route Estimation improvements - Add better API key handling, input validation, logging, and error messages)
   }
 
   const timeoutMs = Number(process.env.ROUTING_TIMEOUT_MS || DEFAULT_TIMEOUT_MS);
@@ -210,9 +303,26 @@ async function estimateRoute({ from, to, constraints }) {
 
   const hash = buildCacheKey({ from, to, constraints });
 
+<<<<<<< HEAD
   const cached = await getCachedResponse(hash);
   if (cached) {
     return { ...cached, metadata: { ...cached.metadata, source: "cache" } };
+=======
+  try {
+    const cached = await getCachedResponse(requestHash);
+    if (cached) {
+      console.log(`[Routing] Cache hit for route`);
+      return {
+        ...cached,
+        metadata: {
+          ...cached.metadata,
+          source: "cache"
+        }
+      };
+    }
+  } catch (cacheError) {
+    console.warn(`[Routing] Cache retrieval error (continuing):`, cacheError.message);
+>>>>>>> 9c0a8c0 (Feature 3: Route Estimation improvements - Add better API key handling, input validation, logging, and error messages)
   }
 
   const provider = await fetchRouteFromProvider(from, to, timeoutMs);
@@ -221,6 +331,7 @@ async function estimateRoute({ from, to, constraints }) {
   const route = normalizeProviderRouteResponse(provider.data);
   if (!route) return { error: { errorType: "NO_ROUTE" } };
 
+<<<<<<< HEAD
   const checkpoints = await getCheckpointMapByIds(constraints?.avoidCheckpointIds || []);
   const violatedCheckpoints = routeViolatesCheckpoints(route.geometry.coordinates, checkpoints, constraints?.avoidCheckpointIds || []);
   const violatedAreas = routeViolatesAreas(route.geometry.coordinates, constraints?.avoidAreas || []);
@@ -234,19 +345,89 @@ async function estimateRoute({ from, to, constraints }) {
       source: "provider",
       requestedAt: new Date().toISOString(),
       violations: { checkpoints: violatedCheckpoints, areas: violatedAreas }
-    }
-  };
+=======
+  const route = normalizeProviderRouteResponse(providerResult.data);
+  if (!route) {
+    console.warn(`[Routing] No valid route in provider response`);
+    return {
+      error: {
+        errorType: "NO_ROUTE",
+        message: "No route found for the given coordinates"
+      }
+    };
+  }
 
+  const routeCoordinates = route.geometry.coordinates;
+  const avoidCheckpointIds = constraints?.avoidCheckpointIds || [];
+  const avoidAreas = constraints?.avoidAreas || [];
+
+  try {
+    const checkpointsById = await getCheckpointMapByIds(avoidCheckpointIds);
+    const violatedCheckpoints = routeViolatesCheckpoints(routeCoordinates, checkpointsById, avoidCheckpointIds);
+    const violatedAreas = routeViolatesAreas(routeCoordinates, avoidAreas);
+
+    const violatesConstraints = violatedCheckpoints.length > 0 || violatedAreas.length > 0;
+
+    const payload = {
+      estimatedDistanceMeters: route.distance || null,
+      estimatedDurationSeconds: route.duration || null,
+      routeGeometry: route.geometry,
+      metadata: {
+        provider: PROVIDER_NAME,
+        source: "provider",
+        requestedAt: new Date().toISOString(),
+        factors: ["traffic-model-from-provider", "checkpoint-and-area-constraint-check"],
+        constraintsApplied: {
+          avoidCheckpointIds,
+          avoidAreas
+        },
+        violations: {
+          checkpoints: violatedCheckpoints,
+          areas: violatedAreas
+        }
+      }
+    };
+
+    try {
+      await setCachedResponse(requestHash, payload, cacheTtlSeconds);
+    } catch (cacheError) {
+      console.warn(`[Routing] Failed to cache response (continuing):`, cacheError.message);
+>>>>>>> 9c0a8c0 (Feature 3: Route Estimation improvements - Add better API key handling, input validation, logging, and error messages)
+    }
+
+<<<<<<< HEAD
   await setCachedResponse(hash, payload, ttl);
 
   if (violatedCheckpoints.length || violatedAreas.length) {
     return {
       error: { errorType: "CONSTRAINT_VIOLATION", details: payload.metadata.violations },
       payload
+=======
+    if (violatesConstraints) {
+      console.info(`[Routing] Route violates constraints. Violations: ${JSON.stringify(payload.metadata.violations)}`);
+      return {
+        error: {
+          errorType: "CONSTRAINT_VIOLATION",
+          message: "Route violates selected constraints",
+          details: payload.metadata.violations
+        },
+        payload
+      };
+    }
+
+    console.info(`[Routing] Route successfully estimated: ${route.distance}m, ${route.duration}s`);
+    return payload;
+  } catch (error) {
+    console.error(`[Routing] Error during constraint checking:`, error.message);
+    return {
+      error: {
+        errorType: "CONSTRAINT_CHECK_ERROR",
+        message: "Error while checking route constraints",
+        details: error.message
+      }
+>>>>>>> 9c0a8c0 (Feature 3: Route Estimation improvements - Add better API key handling, input validation, logging, and error messages)
     };
   }
-
-  return payload;
 }
 
 module.exports = { estimateRoute };
