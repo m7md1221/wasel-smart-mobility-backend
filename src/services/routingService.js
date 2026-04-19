@@ -77,6 +77,37 @@ function haversineDistanceKm(lat1, lon1, lat2, lon2) {
   return earthRadiusKm * c;
 }
 
+// Approximate a geographic circle as a closed polygon ring in GeoJSON [lng, lat] order.
+function circleToPolygonRing(centerLat, centerLng, radiusKm, vertices = 32) {
+  const kmPerDegLat = 111.32;
+  const kmPerDegLng = 111.32 * Math.cos(toRadians(centerLat)) || 1e-6;
+
+  const ring = [];
+  for (let i = 0; i < vertices; i++) {
+    const angle = (i / vertices) * 2 * Math.PI;
+    const dLat = (radiusKm / kmPerDegLat) * Math.sin(angle);
+    const dLng = (radiusKm / kmPerDegLng) * Math.cos(angle);
+    ring.push([centerLng + dLng, centerLat + dLat]);
+  }
+  ring.push(ring[0]);
+  return ring;
+}
+
+function buildAvoidPolygonsGeoJson(avoidAreas) {
+  if (!avoidAreas || avoidAreas.length === 0) {
+    return null;
+  }
+
+  const coordinates = avoidAreas.map((area) =>
+    [circleToPolygonRing(area.center.lat, area.center.lng, area.radiusKm)]
+  );
+
+  return {
+    type: "MultiPolygon",
+    coordinates
+  };
+}
+
 function buildCacheKey(payload) {
   const canonicalPayload = {
     provider: PROVIDER_NAME,
@@ -85,7 +116,8 @@ function buildCacheKey(payload) {
     constraints: {
       avoidCheckpointIds: [...(payload.constraints?.avoidCheckpointIds || [])].sort((a, b) => a - b),
       avoidAreas: payload.constraints?.avoidAreas || []
-    }
+    },
+    incidentIds: payload.incidentIds || []
   };
 
   return crypto.createHash("sha256").update(JSON.stringify(canonicalPayload)).digest("hex");
@@ -245,29 +277,36 @@ function normalizeProviderRouteResponse(providerData) {
   };
 }
 
-function buildProviderRequest(from, to) {
+function buildProviderRequest(from, to, avoidAreas) {
   const providerBaseUrl = getProviderBaseUrl();
   let endpoint = `${providerBaseUrl}/v2/directions/driving-car/geojson`;
-  
+
   // Add API key as query param if available (OpenRouteService standard method)
   if (process.env.ORS_API_KEY) {
     endpoint += `?api_key=${encodeURIComponent(process.env.ORS_API_KEY)}`;
   }
-  
+
+  const body = {
+    coordinates: [
+      [from.lng, from.lat],
+      [to.lng, to.lat]
+    ]
+  };
+
+  const avoidPolygons = buildAvoidPolygonsGeoJson(avoidAreas);
+  if (avoidPolygons) {
+    body.options = { avoid_polygons: avoidPolygons };
+  }
+
   return {
     endpoint,
     method: "POST",
-    body: JSON.stringify({
-      coordinates: [
-        [from.lng, from.lat],
-        [to.lng, to.lat]
-      ]
-    })
+    body: JSON.stringify(body)
   };
 }
 
-async function fetchRouteFromProvider(from, to, timeoutMs) {
-  const requestConfig = buildProviderRequest(from, to);
+async function fetchRouteFromProvider(from, to, timeoutMs, avoidAreas) {
+  const requestConfig = buildProviderRequest(from, to, avoidAreas);
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -359,7 +398,31 @@ async function estimateRoute({ from, to, constraints }) {
   const timeoutMs = Number(process.env.ROUTING_TIMEOUT_MS || DEFAULT_TIMEOUT_MS);
   const cacheTtlSeconds = Number(process.env.ROUTING_CACHE_TTL_SECONDS || DEFAULT_CACHE_TTL_SECONDS);
 
-  const requestPayload = { from, to, constraints };
+  // Resolve all avoidance regions up-front so the provider plans around them.
+  const avoidCheckpointIds = constraints?.avoidCheckpointIds || [];
+  const userAvoidAreas = (constraints?.avoidAreas || []).map((area) => ({
+    ...area,
+    source: "user"
+  }));
+
+  const incidentAvoidAreas = await getActiveIncidentAreas();
+  const checkpointsById = await getCheckpointMapByIds(avoidCheckpointIds);
+  const checkpointAvoidAreas = [...checkpointsById.entries()].map(([id, cp]) => ({
+    center: { lat: cp.latitude, lng: cp.longitude },
+    radiusKm: CHECKPOINT_RADIUS_KM,
+    source: "checkpoint",
+    checkpointId: id,
+    name: cp.name || null
+  }));
+
+  const allAvoidAreas = [...userAvoidAreas, ...incidentAvoidAreas, ...checkpointAvoidAreas];
+
+  const requestPayload = {
+    from,
+    to,
+    constraints,
+    incidentIds: incidentAvoidAreas.map((a) => a.incidentId).sort((a, b) => a - b)
+  };
   const requestHash = buildCacheKey(requestPayload);
 
   try {
@@ -397,7 +460,7 @@ async function estimateRoute({ from, to, constraints }) {
     console.warn(`[Routing] Cache retrieval error (continuing):`, cacheError.message);
   }
 
-  const providerResult = await fetchRouteFromProvider(from, to, timeoutMs);
+  const providerResult = await fetchRouteFromProvider(from, to, timeoutMs, allAvoidAreas);
 
   if (providerResult.errorType) {
     return {
@@ -417,19 +480,10 @@ async function estimateRoute({ from, to, constraints }) {
   }
 
   const routeCoordinates = route.geometry.coordinates;
-  const avoidCheckpointIds = constraints?.avoidCheckpointIds || [];
-  const userAvoidAreas = (constraints?.avoidAreas || []).map((area) => ({
-    ...area,
-    source: "user"
-  }));
 
   try {
-    const incidentAvoidAreas = await getActiveIncidentAreas();
-    const mergedAvoidAreas = [...userAvoidAreas, ...incidentAvoidAreas];
-
-    const checkpointsById = await getCheckpointMapByIds(avoidCheckpointIds);
     const violatedCheckpoints = routeViolatesCheckpoints(routeCoordinates, checkpointsById, avoidCheckpointIds);
-    const violatedAreas = routeViolatesAreas(routeCoordinates, mergedAvoidAreas);
+    const violatedAreas = routeViolatesAreas(routeCoordinates, [...userAvoidAreas, ...incidentAvoidAreas]);
 
     const violatesConstraints = violatedCheckpoints.length > 0 || violatedAreas.length > 0;
 
