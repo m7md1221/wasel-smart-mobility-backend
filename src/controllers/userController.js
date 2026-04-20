@@ -122,7 +122,6 @@ async function addUser(req, res) {
     res.status(500).json({
       message: "Error creating user",
       error: error.message,
-      stack: error.stack
     });
   }
 }
