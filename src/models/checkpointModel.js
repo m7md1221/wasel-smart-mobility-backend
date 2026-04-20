@@ -4,6 +4,7 @@ const sequelize = require("../config/database");
 const Checkpoint = sequelize.define("Checkpoint", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: DataTypes.STRING(150),
+  city: DataTypes.STRING(100),
   latitude: DataTypes.DOUBLE,
   longitude: DataTypes.DOUBLE,
   current_status: DataTypes.STRING(50),
