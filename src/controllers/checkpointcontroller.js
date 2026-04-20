@@ -58,11 +58,12 @@ async function getCheckpointById(req, res) {
 // POST /api/v1/checkpoints
 async function createCheckpoint(req, res) {
   try {
-    const { name, latitude, longitude } = req.body;
+    const { name,city, latitude, longitude } = req.body;
     if (!name) return res.status(400).json({ message: "Name is required" });
+    if (!city) return res.status(400).json({ message: "City is required" });
 
     const checkpoint = await Checkpoint.create({
-      name, latitude, longitude,
+      name, city, latitude, longitude,
       current_status: "active",
       created_at: new Date(),
       updated_at: new Date(),
