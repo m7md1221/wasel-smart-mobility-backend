@@ -6,6 +6,12 @@ const v1Routes = require("./routes/v1");
 // Middleware
 app.use(express.json());
 app.use(bodyparser.json());
+//testing for webhook 
+app.get("/test", (req, res) => {
+  res.json({ message: "main app works" });
+});
+
+
 // Routes
 app.use("/api/v1", v1Routes);
 
