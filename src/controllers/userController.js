@@ -17,12 +17,18 @@ async function signup(req, res) {
 
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
-
+       const finalRole = role || roles.CITIZEN;
+ const isAuthorized =
+      finalRole === roles.ADMIN || finalRole === roles.MODERATOR;
+    
+ 
     await User.create({
       name,
       email,
       password: hashedPassword,
-      role: role || roles.CITIZEN
+      role: finalRole,
+      is_authorized: isAuthorized,
+      confidence_score:finalRole === roles.CITIZEN ? 50 : 100
     });
 
     return res.status(201).json({
