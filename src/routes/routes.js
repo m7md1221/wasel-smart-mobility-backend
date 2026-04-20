@@ -6,6 +6,7 @@ const authentication = require("../middlewares/auth");
 
 const router = express.Router();
 
+// ✅ Route estimation
 router.post(
   "/estimate",
   authentication.checkAuth,

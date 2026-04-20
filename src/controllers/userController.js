@@ -22,7 +22,7 @@ async function signup(req, res) {
       name,
       email,
       password: hashedPassword,
-      role: role || roles.ADMIN
+      role: role || roles.CITIZEN
     });
 
     return res.status(201).json({
@@ -64,8 +64,10 @@ async function login(req, res) {
 
     const token = jwt.sign(
       {
+        id: user.id,
         userId: user.id,
         email: user.email,
+        name: user.name,
         role: user.role
       },
       process.env.JWT_SECRET, 
@@ -74,7 +76,13 @@ async function login(req, res) {
 
     return res.status(200).json({
       message: "Authentication successful",
-      token
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
 
   } catch (error) {
@@ -176,7 +184,6 @@ async function showAllUsers(req,res){
   }
 }
 
-
 async function updateUser(req, res) {
   try {
       const id = parseInt(req.params.id);
@@ -193,11 +200,9 @@ async function updateUser(req, res) {
     }
 
     const updatedData = {};
+
     for (const key of Object.keys(req.body)) {
-      // Don't allow direct password update through this endpoint
-      if (key === "password") {
-        continue;
-      }
+      if (key === "password") continue;
       if (req.body[key] !== undefined) {
         updatedData[key] = req.body[key];
       }

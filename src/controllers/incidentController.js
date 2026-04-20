@@ -4,6 +4,7 @@ const Incident = require("../models/incidentsModel");
 const ModerationLog = require("../models/moderationLogsModel");
 const AlertService = require("../services/alertService");
 const EmailService = require("../services/emailService");
+const { validateCreateIncident } = require("../validators/incidentValidator");
 
 const alertService = new AlertService(new EmailService());
 
@@ -17,9 +18,9 @@ async function getAllIncidents(req, res) {
     } = req.query;
 
     const where = {};
-    if (category)      where.category      = category;
-    if (severity)      where.severity      = severity;
-    if (status)        where.status        = status;
+    if (category) where.category = category;
+    if (severity) where.severity = severity;
+    if (status) where.status = status;
     if (checkpoint_id) where.checkpoint_id = checkpoint_id;
 
     const allowedSort = ["created_at", "severity", "category", "status"];
@@ -37,17 +38,24 @@ async function getAllIncidents(req, res) {
 
     return res.status(200).json({
       data: rows,
-      pagination: { total: count, page: pageNum, limit: limitNum, pages: Math.ceil(count / limitNum) },
+      pagination: {
+        total: count,
+        page: pageNum,
+        limit: limitNum,
+        pages: Math.ceil(count / limitNum)
+      },
     });
   } catch (error) {
-    return res.status(500).json({ message: "Error fetching incidents", error: error.message });
+    return res.status(500).json({
+      message: "Error fetching incidents",
+      error: error.message
+    });
   }
 }
 
 // GET /api/v1/incidents/:id
 async function getIncidentById(req, res) {
   try {
-    // Raw SQL مع JOIN
     const result = await sequelize.query(
       `SELECT i.*, c.name AS checkpoint_name,
               u1.name AS created_by_name, u2.name AS verified_by_name
@@ -56,45 +64,57 @@ async function getIncidentById(req, res) {
        LEFT JOIN users u1       ON i.created_by    = u1.id
        LEFT JOIN users u2       ON i.verified_by   = u2.id
        WHERE i.id = :id`,
-      { replacements: { id: req.params.id }, type: sequelize.QueryTypes.SELECT }
+      {
+        replacements: { id: req.params.id },
+        type: sequelize.QueryTypes.SELECT
+      }
     );
 
-    if (!result[0]) return res.status(404).json({ message: "Incident not found" });
+    if (!result[0]) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
     return res.status(200).json({ data: result[0] });
+
   } catch (error) {
-    return res.status(500).json({ message: "Error fetching incident", error: error.message });
+    return res.status(500).json({
+      message: "Error fetching incident",
+      error: error.message
+    });
   }
 }
 
 // POST /api/v1/incidents
 async function createIncident(req, res) {
   try {
-    const { title, category, severity, description, latitude, longitude, checkpoint_id } = req.body;
+    const errors = validateCreateIncident(req.body);
 
-    if (!title || !category || !severity) {
-      return res.status(400).json({ message: "title, category, and severity are required" });
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: "Validation error",
+        errors
+      });
     }
 
-    const allowedCategories = ["closure", "delay", "accident", "weather_hazard", "other"];
-    const allowedSeverities = ["low", "medium", "high", "critical"];
-
-    if (!allowedCategories.includes(category)) {
-      return res.status(400).json({ message: `Category must be one of: ${allowedCategories.join(", ")}` });
-    }
-    if (!allowedSeverities.includes(severity)) {
-      return res.status(400).json({ message: `Severity must be one of: ${allowedSeverities.join(", ")}` });
-    }
+    const {
+      title, category, severity,
+      description, latitude, longitude, checkpoint_id
+    } = req.body;
 
     const incident = await Incident.create({
-      title, category, severity, description,
-      latitude, longitude, checkpoint_id,
+      title,
+      category,
+      severity,
+      description,
+      latitude,
+      longitude,
+      checkpoint_id,
       created_by: req.user.userId,
       status: "open",
       created_at: new Date(),
       updated_at: new Date(),
     });
 
-    // Moderation log
     await ModerationLog.create({
       event_type: "incident",
       event_id: incident.id,
@@ -103,9 +123,16 @@ async function createIncident(req, res) {
       created_at: new Date(),
     });
 
-    return res.status(201).json({ message: "Incident created", data: incident });
+    return res.status(201).json({
+      message: "Incident created",
+      data: incident
+    });
+
   } catch (error) {
-    return res.status(500).json({ message: "Error creating incident", error: error.message });
+    return res.status(500).json({
+      message: "Error creating incident",
+      error: error.message
+    });
   }
 }
 
@@ -116,20 +143,30 @@ async function updateIncidentStatus(req, res) {
     const allowedStatuses = ["open", "verified", "closed"];
 
     if (!status || !allowedStatuses.includes(status)) {
-      return res.status(400).json({ message: `Status must be one of: ${allowedStatuses.join(", ")}` });
+      return res.status(400).json({
+        message: `Status must be one of: ${allowedStatuses.join(", ")}`
+      });
     }
 
     const incident = await Incident.findByPk(req.params.id);
-    if (!incident) return res.status(404).json({ message: "Incident not found" });
-    //saving old status 
+    if (!incident) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
     const oldStatus = incident.status;
-    const updateData = { status, updated_at: new Date() };
+
+    const updateData = {
+      status,
+      updated_at: new Date()
+    };
+
     if (status === "closed") updateData.closed_at = new Date();
-    if (["verified", "closed"].includes(status)) updateData.verified_by = req.user.userId;
+    if (["verified", "closed"].includes(status)) {
+      updateData.verified_by = req.user.userId;
+    }
 
     await incident.update(updateData);
 
-    // Moderation log
     await ModerationLog.create({
       event_type: "incident",
       event_id: incident.id,
@@ -138,8 +175,8 @@ async function updateIncidentStatus(req, res) {
       reason: reason || null,
       created_at: new Date(),
     });
-   //alert creation for newly verified incidents
-   if (oldStatus !== "verified" && status === "verified") {
+
+    if (oldStatus !== "verified" && status === "verified") {
       await alertService.createAlert({
         incident_id: incident.id,
         category: incident.category,
@@ -149,10 +186,22 @@ async function updateIncidentStatus(req, res) {
       });
     }
 
-    return res.status(200).json({ message: "Incident status updated", data: incident });
+    return res.status(200).json({
+      message: "Incident status updated",
+      data: incident
+    });
+
   } catch (error) {
-    return res.status(500).json({ message: "Error updating incident status", error: error.message });
+    return res.status(500).json({
+      message: "Error updating incident status",
+      error: error.message
+    });
   }
 }
 
-module.exports = { getAllIncidents, getIncidentById, createIncident, updateIncidentStatus };
+module.exports = {
+  getAllIncidents,
+  getIncidentById,
+  createIncident,
+  updateIncidentStatus
+};
