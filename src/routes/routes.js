@@ -6,12 +6,17 @@ const authentication = require("../middlewares/auth");
 
 const router = express.Router();
 
-// ✅ Route estimation
+
 router.post(
   "/estimate",
   authentication.checkAuth,
-  validate(estimateRouteSchema),
-  routeController.estimateRoute
+  validate(estimateRouteSchema),(req,res,next)=>{
+    // #swagger.tags = ['Route Estimation']
+    // #swagger.summary = 'Estimate the best route between two locations considering traffic and checkpoints and give alternative routes'
+    // #swagger.security = [{ BearerAuth: [] }]
+     return routeController.estimateRoute(req,res,next);
+  }
 );
 
 module.exports = router;
+
