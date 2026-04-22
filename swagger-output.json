@@ -21,6 +21,10 @@
   "paths": {
     "/test": {
       "get": {
+        "tags": [
+          "Testing"
+        ],
+        "summary": "Test endpoint to verify the main app is working",
         "description": "",
         "responses": {
           "200": {
@@ -31,6 +35,10 @@
     },
     "/swagger-output.json": {
       "get": {
+        "tags": [
+          "API Documentation"
+        ],
+        "summary": "The generated Swagger documentation JSON file",
         "description": "",
         "responses": {
           "200": {
@@ -41,6 +49,10 @@
     },
     "/api/v1/health": {
       "get": {
+        "tags": [
+          "Health Check"
+        ],
+        "summary": "Health check endpoint to verify API is running",
         "description": "",
         "responses": {
           "200": {

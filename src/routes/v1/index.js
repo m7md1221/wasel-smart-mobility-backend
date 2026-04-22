@@ -24,6 +24,8 @@ router.use("/telegram", telegramRouter);
 
 // healthcheck
 router.get("/health", (req, res) => {
+  // #swagger.tags = ['Health Check']
+  // #swagger.summary = 'Health check endpoint to verify API is running'
   res.json({ status: "ok", apiVersion: "v1" });
 });
 
