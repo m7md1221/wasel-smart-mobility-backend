@@ -16,8 +16,9 @@ app.get("/test", (req, res) => {
 // Routes
 app.use("/api/v1", v1Routes);
 
+//swagger documentation as json file
 app.get('/swagger-output.json', (req, res) => {
-  res.json(require('./swagger-output.json'));
+  res.json(require('../swagger-output.json'));
 });
 //API DOCUMENTATION
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocuments));
