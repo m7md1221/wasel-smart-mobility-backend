@@ -8,7 +8,8 @@ const router = express.Router();
 //public (no authentication or autherization)
  router.post("/signup",validate(createUserSchema), usersController.signup);
   router.post("/login",usersController.login);
-
+//authenticated users
+router.get("/myprofile",authentication.checkAuth,usersController.showProfile); 
 //protected (authentication and autherization)
  router.put("/:id",authentication.checkAuth, authorization.authorizeRole("ADMIN","CITIZIN"),validate(updateUserSchema), usersController.updateUser);
  

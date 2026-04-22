@@ -161,8 +161,7 @@ async function showUserInfo(req,res){
   } catch(error){
     console.error("[User] Error fetching user info:", error);
     res.status(500).json({
-      message : "Error fetching user info",
-      error : error.message
+      message : "Error fetching user info"
     });
   }
 }
@@ -185,7 +184,6 @@ async function showAllUsers(req,res){
     console.error("[User] Error fetching users:", error);
     res.status(500).json({
       message : "Error fetching users",
-      error : error.message
     });
   }
 }
@@ -325,4 +323,35 @@ async function deactivateUser(req,res){
     });
   }
 }
-module.exports = { addUser, showUserInfo, showAllUsers, updateUser, deleteUser, deactivateUser, activateUser, signup, login };
+
+async function showProfile(req, res) {
+  try {
+    const authUserId = req.user?.id || req.user?.userId;
+
+    if (!authUserId) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      });
+    }
+    const user = await User.findByPk(authUserId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+
+    return res.status(200).json({
+      message: "profile found succesfully",
+      user: userResponse
+    });
+  } catch (error) {
+    console.error("[User] Error fetching profile:", error);
+    return res.status(500).json({
+      message: "Error fetching profile",
+      error: error.message
+    });
+  }
+}
+module.exports = { addUser, showUserInfo, showAllUsers, updateUser, deleteUser, deactivateUser, activateUser, signup, login,showProfile };
