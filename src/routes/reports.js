@@ -13,33 +13,53 @@ const {
 const router = express.Router();
 
 // Moderation endpoints first (more specific) - MUST BE BEFORE /:id routes
-router.get("/moderation/queue", authentication.checkAuth, (req, res, next) => {
+router.get(
+  "/moderation/queue",
+  authentication.checkAuth,
+  authorization.authorizeRole("ADMIN", "MODERATOR"),
+  (req, res, next) => {
   // #swagger.tags = ['Reports']
-  // #swagger.summary = 'Get moderation queue (Any authenticated user)'
+  // #swagger.summary = 'Get moderation queue (Moderator and Admin only)'
   // #swagger.security = [{ BearerAuth: [] }]
   return reportController.getModerationQueue(req, res, next);
-});
+  }
+);
 
-router.get("/moderation/stats", authentication.checkAuth, (req, res, next) => {
+router.get(
+  "/moderation/stats",
+  authentication.checkAuth,
+  authorization.authorizeRole("ADMIN", "MODERATOR"),
+  (req, res, next) => {
   // #swagger.tags = ['Reports']
-  // #swagger.summary = 'Get moderation statistics'
+  // #swagger.summary = 'Get moderation statistics (Moderator and Admin only)'
   // #swagger.security = [{ BearerAuth: [] }]
   return reportController.getModerationStats(req, res, next);
-});
+  }
+);
 
-router.get("/moderation/logs", authentication.checkAuth, (req, res, next) => {
+router.get(
+  "/moderation/logs",
+  authentication.checkAuth,
+  authorization.authorizeRole("ADMIN", "MODERATOR"),
+  (req, res, next) => {
   // #swagger.tags = ['Reports']
-  // #swagger.summary = 'Get moderation logs'
+  // #swagger.summary = 'Get moderation logs (Moderator and Admin only)'
   // #swagger.security = [{ BearerAuth: [] }]
   return reportController.getModerationLogs(req, res, next);
-});
+  }
+);
 
-router.get("/moderation/duplicates", authentication.checkAuth, (req, res, next) => {
+router.get(
+  "/moderation/duplicates",
+  authentication.checkAuth,
+  authorization.authorizeRole("ADMIN", "MODERATOR"),
+  (req, res, next) => {
   // #swagger.tags = ['Reports']
-  // #swagger.summary = 'Get potential duplicate reports'
+  // #swagger.summary = 'Get potential duplicate reports (Moderator and Admin only)'
   // #swagger.security = [{ BearerAuth: [] }]
   return reportController.getDuplicateReports(req, res, next);
-});
+  }
+);
 
 // Public endpoints
 router.get("/", (req, res, next) => {
