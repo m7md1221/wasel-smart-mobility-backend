@@ -1,4 +1,4 @@
-\# Wasel Smart Mobility Backend
+## Wasel Smart Mobility Backend
 
 API-centric backend platform for smart mobility: checkpoints, road incidents, crowdsourced reports, route estimation, and regional alerts. Built with Express + PostgreSQL, with Swagger documentation and JWT authentication.
 
