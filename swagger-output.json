@@ -111,9 +111,35 @@
         ],
         "summary": "Login a user",
         "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -534,7 +560,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get moderation queue (Any authenticated user)",
+        "summary": "Get moderation queue (Moderator and Admin only)",
         "description": "",
         "parameters": [
           {
@@ -579,7 +605,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get moderation statistics",
+        "summary": "Get moderation statistics (Moderator and Admin only)",
         "description": "",
         "parameters": [
           {
@@ -614,7 +640,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get moderation logs",
+        "summary": "Get moderation logs (Moderator and Admin only)",
         "description": "",
         "parameters": [
           {
@@ -684,7 +710,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get potential duplicate reports",
+        "summary": "Get potential duplicate reports (Moderator and Admin only)",
         "description": "",
         "parameters": [
           {
@@ -699,6 +725,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
