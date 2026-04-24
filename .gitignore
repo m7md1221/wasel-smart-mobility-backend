@@ -165,3 +165,12 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# k6 result artifacts
+k6/results/
+
+# Claude Code local session cache
+.claude/
+
+# Generated PDFs
+PERFORMANCE.pdf

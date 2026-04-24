@@ -6,8 +6,13 @@ API-centric backend platform for smart mobility: checkpoints, road incidents, cr
 
 This README is designed as a practical developer guide for setup, architecture, and API usage.
 
+## 📖 Project Wiki
+
+A structured wiki for this project is available under [docs/wiki/README.md](docs/wiki/README.md). It covers setup, architecture, API usage, GraphQL, performance testing, deployment, and troubleshooting.
+
 ## 📚 Table of Contents
 
+- [Project Wiki](#project-wiki)
 - [Project Overview](#project-overview)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
@@ -18,16 +23,17 @@ This README is designed as a practical developer guide for setup, architecture, 
 - [Run with Docker](#run-with-docker)
 - [Scripts](#scripts)
 - [Swagger Documentation](#swagger-documentation)
+- [GraphQL API](#graphql-api)
 - [Authentication and Authorization](#authentication-and-authorization)
 - [API Endpoints](#api-endpoints)
 - [API Usage Examples](#api-usage-examples)
 - [Folder Structure](#folder-structure)
 - [Deployment](#deployment)
 - [Screenshots and Demo](#screenshots-and-demo)
+- [Developers](#developers)
 - [Security Notes](#security-notes)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## 🌍 Project Overview
 
@@ -48,6 +54,13 @@ Wasel Smart Mobility Backend powers a mobility-focused ecosystem for:
 - Route estimation service with provider integration.
 - Swagger/OpenAPI documentation generation.
 - Containerized local run support with Docker Compose.
+
+## 🆕 Recent Updates
+
+- Added GraphQL support for authentication and API data access.
+- Added Telegram bot/webhook integration for notification workflows.
+- Added alert subscription management for category and location preferences.
+- Added performance testing scenarios under `k6/` for read, write, mixed, soak, and spike workloads.
 
 ## 🛠️ Tech Stack
 
@@ -180,6 +193,17 @@ Regenerate `swagger-output.json` (optional):
 ```bash
 node swagger.js
 ```
+
+## 📡 GraphQL API
+
+GraphQL support is available under `src/graphql/` and includes schema definitions, resolvers, and auth helpers.
+
+The main entry points are:
+
+- `src/graphql/index.js`
+- `src/graphql/typeDefs.js`
+- `src/graphql/resolvers.js`
+- `src/graphql/auth.js`
 
 ## 🔑 Authentication and Authorization
 
@@ -370,6 +394,7 @@ docker compose logs -f app
 
 If you add screenshots, keep dimensions and naming consistent for a clean repository presentation.
 
+
 ## 🛡️ Security Notes
 
 - Do not commit `.env` (it is in `.gitignore`).
@@ -392,13 +417,14 @@ Contributions are welcome.
 4. Run lint/format checks before opening a pull request.
 5. Open a PR with a concise description and test notes.
 
-## 📄 License
-
-No license file is currently included in this repository.
-
-If you plan to open-source this project, add a license file (for example MIT) to clarify usage rights.
 
 
+## 👥 Developers
+
+- mohammad dawabsheh - [LinkedIn](https://www.linkedin.com/in/mohammad-dawabsheh-193050308/)
+- deema daraghmeh - [LinkedIn](https://www.linkedin.com/in/deema-daraghmeh)
+- ameen salah aldeen - [LinkedIn](https://www.linkedin.com/in/ameen-salahat)
+- Marah Sirhed - [LinkedIn](https://www.linkedin.com/in/marah-sirhed)
 
 
 
