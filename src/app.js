@@ -24,6 +24,10 @@ app.get('/swagger-output.json', (req, res) => {
 });
 //API DOCUMENTATION
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocuments));
+
+const { graphqlHandler } = require('./graphql');
+app.all('/graphql', graphqlHandler);
+
 // Error route (optional)
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
 
