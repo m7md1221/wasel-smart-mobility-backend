@@ -67,39 +67,37 @@
           "Users"
         ],
         "summary": "Register a new user",
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "role": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
+        "description": "Creates a new user account with name, email, password, and role.",
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "User created successfully"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "User already exists"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "name": "John Doe",
+                "email": "john@example.com",
+                "password": "password123",
+                "role": "CITIZEN"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "name": "John Doe",
+                "email": "john@example.com",
+                "password": "password123",
+                "role": "CITIZEN"
+              }
+            }
           }
         }
       }
@@ -110,36 +108,73 @@
           "Users"
         ],
         "summary": "Login a user",
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
+        "description": "logins user in the system by entering email and password, and returns JWT token",
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
             "schema": {
               "type": "object",
               "properties": {
-                "email": {
-                  "example": "any"
+                "message": {
+                  "type": "string",
+                  "example": "Authentication successful"
                 },
-                "password": {
-                  "example": "any"
+                "token": {
+                  "type": "string",
+                  "example": "JWT_TOKEN"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john@example.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "CITIZEN"
+                    }
+                  }
                 }
+              },
+              "xml": {
+                "name": "main"
               }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Invalid parameters"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Account is inactive"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "email": "john@example.com",
+                "password": "password123"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "email": "john@example.com",
+                "password": "password123"
+              }
+            }
           }
         }
       }
@@ -149,8 +184,8 @@
         "tags": [
           "Users"
         ],
-        "summary": "The authenticated user can view their profile",
-        "description": "",
+        "summary": "Get my profile",
+        "description": "Returns the profile of the authenticated user",
         "parameters": [
           {
             "name": "authorization",
@@ -159,8 +194,17 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "Profile found successfully"
+          },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "user not found"
+          },
+          "500": {
+            "description": "Server error"
           }
         },
         "security": [
@@ -175,14 +219,15 @@
         "tags": [
           "Users"
         ],
-        "summary": "Update user information (Admin can update any user, Citizen can update their own information)",
-        "description": "",
+        "summary": "Update user",
+        "description": "Admin can update any user, Citizen can update their own data",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "User ID"
           },
           {
             "name": "authorization",
@@ -192,7 +237,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User updated successfully"
           },
           "400": {
             "description": "Bad Request"
@@ -204,7 +249,7 @@
             "description": "Forbidden"
           },
           "404": {
-            "description": "Not Found"
+            "description": "User not found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -214,20 +259,37 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "name": "Updated Name",
+                "email": "updated@email.com"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "name": "Updated Name",
+                "email": "updated@email.com"
+              }
+            }
+          }
+        }
       },
       "delete": {
         "tags": [
           "Users"
         ],
-        "summary": "Admin deletes a user",
-        "description": "",
+        "summary": "Delete user",
+        "description": "Admin deletes a user permanently",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -237,10 +299,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User deleted successfully"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid user ID"
           },
           "401": {
             "description": "Unauthorized"
@@ -249,10 +311,10 @@
             "description": "Forbidden"
           },
           "404": {
-            "description": "Not Found"
+            "description": "User not found"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Error deleteing user"
           }
         },
         "security": [
@@ -265,14 +327,14 @@
         "tags": [
           "Users"
         ],
-        "summary": "Admin or moderator views a specific user",
+        "summary": "Get user by ID",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -312,51 +374,21 @@
         "tags": [
           "Users"
         ],
-        "summary": "Admin creates a new user",
-        "description": "",
+        "summary": "Admin creates a user",
+        "description": "Admin creates new user by entering user",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "role": {
-                  "example": "any"
-                },
-                "confidence_score": {
-                  "example": "any"
-                },
-                "is_active": {
-                  "example": "any"
-                },
-                "is_authorized": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "User created successfully"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "User with this email already exists"
           },
           "401": {
             "description": "Unauthorized"
@@ -365,20 +397,47 @@
             "description": "Forbidden"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Error creating user"
           }
         },
         "security": [
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "name": "Admin Created User",
+                "email": "user@email.com",
+                "password": "password123",
+                "role": "CITIZEN",
+                "confidence_score": 50,
+                "is_active": true,
+                "is_authorized": false
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "name": "Admin Created User",
+                "email": "user@email.com",
+                "password": "password123",
+                "role": "CITIZEN",
+                "confidence_score": 50,
+                "is_active": true,
+                "is_authorized": false
+              }
+            }
+          }
+        }
       },
       "get": {
         "tags": [
           "Users"
         ],
-        "summary": "Admin or moderator views all users",
+        "summary": "Get all users",
         "description": "",
         "parameters": [
           {
@@ -389,7 +448,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of users"
           },
           "401": {
             "description": "Unauthorized"
@@ -398,10 +457,10 @@
             "description": "Forbidden"
           },
           "404": {
-            "description": "Not Found"
+            "description": "users not found"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Error fetching users"
           }
         },
         "security": [
@@ -416,14 +475,14 @@
         "tags": [
           "Users"
         ],
-        "summary": "Admin deactivates a user",
-        "description": "",
+        "summary": "Deactivate user",
+        "description": "Admin deactivates the user , the user can",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -433,10 +492,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User deactivated successfully"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "User is already deactivated"
           },
           "401": {
             "description": "Unauthorized"
@@ -445,10 +504,10 @@
             "description": "Forbidden"
           },
           "404": {
-            "description": "Not Found"
+            "description": "User not found"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Error deactivating user"
           }
         },
         "security": [
@@ -463,14 +522,14 @@
         "tags": [
           "Users"
         ],
-        "summary": "Admin activates a user",
-        "description": "",
+        "summary": "Activate user",
+        "description": " Admin activates any user in the system ,an admin can activate citizens,moderators, and admins",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -480,10 +539,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User activated successfully"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "User is already activated"
           },
           "401": {
             "description": "Unauthorized"
@@ -492,10 +551,10 @@
             "description": "Forbidden"
           },
           "404": {
-            "description": "Not Found"
+            "description": "User not found"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Error activating user"
           }
         },
         "security": [

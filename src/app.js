@@ -26,7 +26,44 @@ app.get('/swagger-output.json', (req, res) => {
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocuments));
 
 const { graphqlHandler } = require('./graphql');
-app.all('/graphql', graphqlHandler);
+//graphQL routes 
+app.all('/graphql',
+  /*
+    #swagger.tags = ['GraphQL']
+    #swagger.summary = 'GraphQL endpoint'
+    #swagger.description = 'Single GraphQL endpoint.Send a GraphQL query in the request body.'
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    #swagger.consumes = ['application/json']
+    #swagger.produces = ['application/json']
+
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["query"],
+            properties: {
+              query: {
+                type: "string",
+                example: "query { checkpoints { id name city current_status } }"
+              },
+              variables: {
+                type: "object",
+                example: {}
+              },
+              operationName: {
+                type: "string",
+                example: "GetCheckpoints"
+              }
+            }
+          }
+        }
+      }
+    }*/
+    graphqlHandler);
 
 // Error route (optional)
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
