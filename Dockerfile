@@ -8,6 +8,6 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 4000
 
 CMD ["sh", "-c", "sleep 10 && node src/server.js"]

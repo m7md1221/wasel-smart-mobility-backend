@@ -14,6 +14,7 @@ router.post("/signup", validate(createUserSchema), (req, res, next) => {
 router.post("/login",(req,res,next)=>{
  // #swagger.tags = ['Users']
  // #swagger.summary = 'Login a user'
+ return usersController.login(req, res, next);
 });
 
 // authenticated users
