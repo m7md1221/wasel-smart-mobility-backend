@@ -7,7 +7,13 @@
     "build": "tsc",
     "start": "nodemon src/server.js",
     "lint": "eslint \"src/**/*.js\" --fix",
-    "format": "prettier --write \"src/**/*.js\""
+    "format": "prettier --write \"src/**/*.js\"",
+    "k6:read": "k6 run k6/scenarios/read-heavy.js",
+    "k6:write": "k6 run k6/scenarios/write-heavy.js",
+    "k6:mixed": "k6 run k6/scenarios/mixed.js",
+    "k6:spike": "k6 run k6/scenarios/spike.js",
+    "k6:soak": "k6 run k6/scenarios/soak.js",
+    "k6:all": "npm run k6:read && npm run k6:write && npm run k6:mixed && npm run k6:spike && npm run k6:soak"
   },
   "dependencies": {
     "axios": "^1.15.1",
