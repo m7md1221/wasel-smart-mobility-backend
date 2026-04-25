@@ -1185,43 +1185,223 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get moderation queue (Moderator and Admin only)",
-        "description": "",
+        "summary": "Get moderation queue",
+        "description": "Retrieves pending reports for moderation. Only Admin and Moderator can access this endpoint.",
         "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "authorization",
             "in": "header",
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of reports to return",
+            "example": 20,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number for pagination",
+            "example": 0,
+            "schema": {
+              "type": "integer"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Moderation queue retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Moderation queue retrieved"
+                    },
+                    "reports": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "123"
+                          },
+                          "contentId": {
+                            "type": "string",
+                            "example": "abc"
+                          },
+                          "contentType": {
+                            "type": "string",
+                            "example": "post"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "example": "Inappropriate content"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "pending"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-01-01T00:00:00Z"
+                          },
+                          "reporter": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "user123"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "reporter1"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 20
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Moderation queue retrieved"
+                    },
+                    "reports": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "123"
+                          },
+                          "contentId": {
+                            "type": "string",
+                            "example": "abc"
+                          },
+                          "contentType": {
+                            "type": "string",
+                            "example": "post"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "example": "Inappropriate content"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "pending"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-01-01T00:00:00Z"
+                          },
+                          "reporter": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "user123"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "reporter1"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 20
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - missing or invalid token"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - only Admin or Moderator can access moderation queue",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Only moderators can access the moderation queue"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Only moderators can access the moderation queue"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while retrieving moderation queue"
           }
         },
         "security": [
@@ -1236,8 +1416,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get moderation statistics (Moderator and Admin only)",
-        "description": "",
+        "summary": "Get moderation statistics",
+        "description": "Retrieves moderation queue statistics. Only Admin and Moderator can access this endpoint.",
         "parameters": [
           {
             "name": "authorization",
@@ -1249,16 +1429,212 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Moderation statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Moderation statistics retrieved"
+                    },
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "totalReports": {
+                          "type": "number",
+                          "example": 100
+                        },
+                        "pendingReports": {
+                          "type": "number",
+                          "example": 20
+                        },
+                        "resolvedReports": {
+                          "type": "number",
+                          "example": 70
+                        },
+                        "rejectedReports": {
+                          "type": "number",
+                          "example": 10
+                        },
+                        "reportsByReason": {
+                          "type": "object",
+                          "properties": {
+                            "Inappropriate content": {
+                              "type": "number",
+                              "example": 50
+                            },
+                            "Spam": {
+                              "type": "number",
+                              "example": 30
+                            },
+                            "Harassment": {
+                              "type": "number",
+                              "example": 20
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Moderation statistics retrieved"
+                    },
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "totalReports": {
+                          "type": "number",
+                          "example": 100
+                        },
+                        "pendingReports": {
+                          "type": "number",
+                          "example": 20
+                        },
+                        "resolvedReports": {
+                          "type": "number",
+                          "example": 70
+                        },
+                        "rejectedReports": {
+                          "type": "number",
+                          "example": 10
+                        },
+                        "reportsByReason": {
+                          "type": "object",
+                          "properties": {
+                            "Inappropriate content": {
+                              "type": "number",
+                              "example": 50
+                            },
+                            "Spam": {
+                              "type": "number",
+                              "example": 30
+                            },
+                            "Harassment": {
+                              "type": "number",
+                              "example": 20
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - only Admin or Moderator can access moderation statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while retrieving moderation statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1273,12 +1649,22 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get moderation logs (Moderator and Admin only)",
-        "description": "",
+        "summary": "Get moderation logs",
+        "description": "Retrieves moderation logs. Only Admin and Moderator can access this endpoint.",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "event_type",
             "in": "query",
+            "required": false,
+            "description": "Filter logs by event type",
+            "example": "REPORT_MODERATION",
             "schema": {
               "type": "string"
             }
@@ -1286,6 +1672,9 @@
           {
             "name": "action",
             "in": "query",
+            "required": false,
+            "description": "Filter logs by moderation action",
+            "example": "APPROVE",
             "schema": {
               "type": "string"
             }
@@ -1293,13 +1682,19 @@
           {
             "name": "performed_by",
             "in": "query",
+            "required": false,
+            "description": "Filter logs by moderator/admin user ID",
+            "example": 1,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
             "name": "start_date",
             "in": "query",
+            "required": false,
+            "description": "Start date filter",
+            "example": "2026-04-01",
             "schema": {
               "type": "string"
             }
@@ -1307,6 +1702,9 @@
           {
             "name": "end_date",
             "in": "query",
+            "required": false,
+            "description": "End date filter",
+            "example": "2026-04-25",
             "schema": {
               "type": "string"
             }
@@ -1314,37 +1712,304 @@
           {
             "name": "limit",
             "in": "query",
+            "required": false,
+            "description": "Number of logs to return",
+            "example": 50,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
             "name": "page",
             "in": "query",
+            "required": false,
+            "description": "Page number for pagination",
+            "example": 0,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Moderation logs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Moderation logs retrieved"
+                    },
+                    "logs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "log123"
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "example": "REPORT_MODERATION"
+                          },
+                          "action": {
+                            "type": "string",
+                            "example": "APPROVE"
+                          },
+                          "reportId": {
+                            "type": "string",
+                            "example": "report123"
+                          },
+                          "contentId": {
+                            "type": "string",
+                            "example": "content123"
+                          },
+                          "contentType": {
+                            "type": "string",
+                            "example": "post"
+                          },
+                          "performedBy": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "mod123"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "moderator1"
+                              }
+                            }
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "example": "2024-01-01T00:00:00Z"
+                          },
+                          "details": {
+                            "type": "object",
+                            "properties": {
+                              "reason": {
+                                "type": "string",
+                                "example": "Inappropriate content"
+                              },
+                              "comment": {
+                                "type": "string",
+                                "example": "This post violates our guidelines"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 50
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Moderation logs retrieved"
+                    },
+                    "logs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "log123"
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "example": "REPORT_MODERATION"
+                          },
+                          "action": {
+                            "type": "string",
+                            "example": "APPROVE"
+                          },
+                          "reportId": {
+                            "type": "string",
+                            "example": "report123"
+                          },
+                          "contentId": {
+                            "type": "string",
+                            "example": "content123"
+                          },
+                          "contentType": {
+                            "type": "string",
+                            "example": "post"
+                          },
+                          "performedBy": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "mod123"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "moderator1"
+                              }
+                            }
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "example": "2024-01-01T00:00:00Z"
+                          },
+                          "details": {
+                            "type": "object",
+                            "properties": {
+                              "reason": {
+                                "type": "string",
+                                "example": "Inappropriate content"
+                              },
+                              "comment": {
+                                "type": "string",
+                                "example": "This post violates our guidelines"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 50
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - insufficient role permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while retrieving moderation logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1359,8 +2024,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get potential duplicate reports (Moderator and Admin only)",
-        "description": "",
+        "summary": "Get duplicate reports",
+        "description": "Retrieves potential duplicate reports. Only Admin and Moderator can access this endpoint.",
         "parameters": [
           {
             "name": "authorization",
@@ -1372,16 +2037,242 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Duplicate reports retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Duplicate reports retrieved"
+                    },
+                    "duplicates": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "contentId": {
+                            "type": "string",
+                            "example": "content123"
+                          },
+                          "contentType": {
+                            "type": "string",
+                            "example": "post"
+                          },
+                          "reports": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "example": "report124"
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "example": "Inappropriate content"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "example": "pending"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "example": "2024-01-02T00:00:00Z"
+                                },
+                                "reporter": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "example": "user124"
+                                    },
+                                    "username": {
+                                      "type": "string",
+                                      "example": "reporter2"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Duplicate reports retrieved"
+                    },
+                    "duplicates": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "contentId": {
+                            "type": "string",
+                            "example": "content123"
+                          },
+                          "contentType": {
+                            "type": "string",
+                            "example": "post"
+                          },
+                          "reports": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "example": "report124"
+                                },
+                                "reason": {
+                                  "type": "string",
+                                  "example": "Inappropriate content"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "example": "pending"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "example": "2024-01-02T00:00:00Z"
+                                },
+                                "reporter": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "example": "user124"
+                                    },
+                                    "username": {
+                                      "type": "string",
+                                      "example": "reporter2"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - only Admin or Moderator can access duplicate reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while retrieving duplicate reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1397,11 +2288,14 @@
           "Reports"
         ],
         "summary": "Retrieve all reports",
-        "description": "",
+        "description": "Retrieves all reports with info such as category, status, location radius, confidence, limit, and page.",
         "parameters": [
           {
             "name": "category",
             "in": "query",
+            "required": false,
+            "description": "Filter reports by category",
+            "example": "CLOSURE",
             "schema": {
               "type": "string"
             }
@@ -1409,6 +2303,9 @@
           {
             "name": "status",
             "in": "query",
+            "required": false,
+            "description": "Filter reports by status",
+            "example": "PENDING",
             "schema": {
               "type": "string"
             }
@@ -1416,52 +2313,244 @@
           {
             "name": "latitude",
             "in": "query",
+            "required": false,
+            "description": "Latitude for location-based filtering",
+            "example": 31.9522,
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
             "name": "longitude",
             "in": "query",
+            "required": false,
+            "description": "Longitude for location-based filtering",
+            "example": 35.2332,
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
             "name": "radius_km",
             "in": "query",
+            "required": false,
+            "description": "Radius in kilometers for location-based filtering",
+            "example": 5,
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
             "name": "min_confidence",
             "in": "query",
+            "required": false,
+            "description": "Minimum confidence score",
+            "example": 50,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
             "name": "limit",
             "in": "query",
+            "required": false,
+            "description": "Number of reports to return",
+            "example": 20,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
             "name": "page",
             "in": "query",
+            "required": false,
+            "description": "Page number for pagination",
+            "example": 0,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Reports retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Reports retrieved"
+                    },
+                    "reports": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "123"
+                          },
+                          "contentId": {
+                            "type": "string",
+                            "example": "abc"
+                          },
+                          "contentType": {
+                            "type": "string",
+                            "example": "post"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "example": "Inappropriate content"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "pending"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-01-01T00:00:00Z"
+                          },
+                          "reporter": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "user123"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "reporter1"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 20
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Reports retrieved"
+                    },
+                    "reports": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "123"
+                          },
+                          "contentId": {
+                            "type": "string",
+                            "example": "abc"
+                          },
+                          "contentType": {
+                            "type": "string",
+                            "example": "post"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "example": "Inappropriate content"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "pending"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2024-01-01T00:00:00Z"
+                          },
+                          "reporter": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "user123"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "reporter1"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 20
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while retrieving reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -1470,7 +2559,7 @@
           "Reports"
         ],
         "summary": "Submit a new report",
-        "description": "",
+        "description": "Allows an authenticated Citizen or Admin to submit a new road/checkpoint-related report.",
         "parameters": [
           {
             "name": "authorization",
@@ -1481,21 +2570,416 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "Report submitted successfully, but similar reports exist nearby",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report submitted, but similar reports exist nearby"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report submitted, but similar reports exist nearby"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Report submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report submitted"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report submitted"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid report data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid report data"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid report data"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - user not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - only Citizen or Admin can submit reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while submitting report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "category",
+                  "description",
+                  "latitude",
+                  "longitude"
+                ],
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "example": "CLOSURE"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Checkpoint is closed and cars are waiting."
+                  },
+                  "latitude": {
+                    "type": "number",
+                    "example": 31.9522
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "example": 35.2332
+                  },
+                  "checkpoint_id": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/reports/stats": {
@@ -1504,11 +2988,14 @@
           "Reports"
         ],
         "summary": "Get report statistics",
-        "description": "",
+        "description": "Retrieves report statistics, optionally filtered by category.",
         "parameters": [
           {
             "name": "category",
             "in": "query",
+            "required": false,
+            "description": "Filter statistics by report category",
+            "example": "CLOSURE",
             "schema": {
               "type": "string"
             }
@@ -1516,10 +3003,156 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Report statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report statistics retrieved"
+                    },
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "totalReports": {
+                          "type": "number",
+                          "example": 100
+                        },
+                        "reportsByCategory": {
+                          "type": "object",
+                          "properties": {
+                            "CLOSURE": {
+                              "type": "number",
+                              "example": 50
+                            },
+                            "ACCIDENT": {
+                              "type": "number",
+                              "example": 30
+                            },
+                            "HAZARD": {
+                              "type": "number",
+                              "example": 20
+                            }
+                          }
+                        },
+                        "reportsByStatus": {
+                          "type": "object",
+                          "properties": {
+                            "PENDING": {
+                              "type": "number",
+                              "example": 20
+                            },
+                            "RESOLVED": {
+                              "type": "number",
+                              "example": 70
+                            },
+                            "REJECTED": {
+                              "type": "number",
+                              "example": 10
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report statistics retrieved"
+                    },
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "totalReports": {
+                          "type": "number",
+                          "example": 100
+                        },
+                        "reportsByCategory": {
+                          "type": "object",
+                          "properties": {
+                            "CLOSURE": {
+                              "type": "number",
+                              "example": 50
+                            },
+                            "ACCIDENT": {
+                              "type": "number",
+                              "example": 30
+                            },
+                            "HAZARD": {
+                              "type": "number",
+                              "example": 20
+                            }
+                          }
+                        },
+                        "reportsByStatus": {
+                          "type": "object",
+                          "properties": {
+                            "PENDING": {
+                              "type": "number",
+                              "example": 20
+                            },
+                            "RESOLVED": {
+                              "type": "number",
+                              "example": 70
+                            },
+                            "REJECTED": {
+                              "type": "number",
+                              "example": 10
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while retrieving report statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1529,8 +3162,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get a report by ID",
-        "description": "",
+        "summary": "Get report by ID",
+        "description": "Retrieves a single report by its ID.",
         "parameters": [
           {
             "name": "id",
@@ -1538,12 +3171,194 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Report ID",
+            "example": 1
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Report retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report retrieved"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report retrieved"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Report not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while retrieving report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -1551,8 +3366,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Delete a report (Moderator and Admin only)",
-        "description": "",
+        "summary": "Delete a report",
+        "description": "Deletes a specific report. Only Admin and Moderator can access this endpoint.",
         "parameters": [
           {
             "name": "id",
@@ -1560,7 +3375,9 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Report ID",
+            "example": 1
           },
           {
             "name": "authorization",
@@ -1572,13 +3389,169 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Report deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report deleted"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report deleted"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - user not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - only Admin or Moderator can delete reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Report not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while deleting report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1593,8 +3566,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get audit trail for a report",
-        "description": "",
+        "summary": "Get report audit trail",
+        "description": "Retrieves the audit trail for a specific report.",
         "parameters": [
           {
             "name": "id",
@@ -1602,22 +3575,179 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Report ID",
+            "example": 1
           },
           {
             "name": "limit",
             "in": "query",
+            "required": false,
+            "description": "Number of audit records to return",
+            "example": 50,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Audit trail retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Audit trail retrieved"
+                    },
+                    "auditTrail": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "audit124"
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "example": "REPORT_MODERATED"
+                          },
+                          "performedBy": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "mod123"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "moderator1"
+                              }
+                            }
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "example": "2024-01-02T00:00:00Z"
+                          },
+                          "details": {
+                            "type": "object",
+                            "properties": {
+                              "action": {
+                                "type": "string",
+                                "example": "APPROVE"
+                              },
+                              "comment": {
+                                "type": "string",
+                                "example": "This report   violates our guidelines"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Audit trail retrieved"
+                    },
+                    "auditTrail": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "audit124"
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "example": "REPORT_MODERATED"
+                          },
+                          "performedBy": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "mod123"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "moderator1"
+                              }
+                            }
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "example": "2024-01-02T00:00:00Z"
+                          },
+                          "details": {
+                            "type": "object",
+                            "properties": {
+                              "action": {
+                                "type": "string",
+                                "example": "APPROVE"
+                              },
+                              "comment": {
+                                "type": "string",
+                                "example": "This report   violates our guidelines"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while retrieving audit trail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1627,8 +3757,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Get comments for a report",
-        "description": "",
+        "summary": "Get report comments",
+        "description": "Retrieves comments for a specific report.",
         "parameters": [
           {
             "name": "id",
@@ -1636,26 +3766,186 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Report ID",
+            "example": 1
           },
           {
             "name": "limit",
             "in": "query",
+            "required": false,
+            "description": "Number of comments to return",
+            "example": 50,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
             "name": "page",
             "in": "query",
+            "required": false,
+            "description": "Page number for pagination",
+            "example": 0,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Comments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comments retrieved"
+                    },
+                    "comments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "comment123"
+                          },
+                          "content": {
+                            "type": "string",
+                            "example": "This is a comment on the report."
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 50
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comments retrieved"
+                    },
+                    "comments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "comment123"
+                          },
+                          "content": {
+                            "type": "string",
+                            "example": "This is a comment on the report."
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 50
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Report or comments not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report or comments not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report or comments not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while retrieving comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -1663,8 +3953,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Add a comment to a report",
-        "description": "",
+        "summary": "Add comment to report",
+        "description": "Allows an authenticated user to add a comment to a specific report.",
         "parameters": [
           {
             "name": "id",
@@ -1672,7 +3962,9 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Report ID",
+            "example": 1
           },
           {
             "name": "authorization",
@@ -1684,13 +3976,229 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Comment added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comment added"
+                    },
+                    "comment": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "comment123"
+                        },
+                        "content": {
+                          "type": "string",
+                          "example": "This is a comment on the report."
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "commenter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "commenter1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comment added"
+                    },
+                    "comment": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "comment123"
+                        },
+                        "content": {
+                          "type": "string",
+                          "example": "This is a comment on the report."
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "commenter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "commenter1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid comment data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid comment data"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid comment data"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - user not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Report not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while adding comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1699,13 +4207,18 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "comment"
+                ],
                 "properties": {
                   "comment": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "I passed from there 10 minutes ago and it is still closed."
                   }
                 }
               }
@@ -1720,7 +4233,7 @@
           "Reports"
         ],
         "summary": "Vote on a report",
-        "description": "",
+        "description": "Allows an authenticated user to vote on a specific report.",
         "parameters": [
           {
             "name": "id",
@@ -1728,7 +4241,9 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Report ID",
+            "example": 1
           },
           {
             "name": "authorization",
@@ -1740,13 +4255,279 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Vote recorded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Vote recorded"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        },
+                        "votes": {
+                          "type": "object",
+                          "properties": {
+                            "upvotes": {
+                              "type": "number",
+                              "example": 10
+                            },
+                            "downvotes": {
+                              "type": "number",
+                              "example": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Vote recorded"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "pending"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        },
+                        "votes": {
+                          "type": "object",
+                          "properties": {
+                            "upvotes": {
+                              "type": "number",
+                              "example": 10
+                            },
+                            "downvotes": {
+                              "type": "number",
+                              "example": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid vote value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid vote value"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid vote value"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - user not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Report not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while voting on report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1755,13 +4536,18 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "vote"
+                ],
                 "properties": {
                   "vote": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "UPVOTE"
                   }
                 }
               }
@@ -1775,8 +4561,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Moderate a report (Moderator and Admin only)",
-        "description": "",
+        "summary": "Moderate a report",
+        "description": "Allows Admin or Moderator to approve, reject, or otherwise moderate a specific report.",
         "parameters": [
           {
             "name": "id",
@@ -1784,7 +4570,9 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Report ID",
+            "example": 1
           },
           {
             "name": "authorization",
@@ -1796,16 +4584,320 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Report moderated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report moderated"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "approved"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        },
+                        "moderator": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "mod123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "moderator1"
+                            }
+                          }
+                        },
+                        "moderationReason": {
+                          "type": "string",
+                          "example": "Report verified by moderator."
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report moderated"
+                    },
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "123"
+                        },
+                        "contentId": {
+                          "type": "string",
+                          "example": "abc"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "example": "post"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Inappropriate content"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "approved"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2024-01-01T00:00:00Z"
+                        },
+                        "reporter": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "reporter1"
+                            }
+                          }
+                        },
+                        "moderator": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "mod123"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "moderator1"
+                            }
+                          }
+                        },
+                        "moderationReason": {
+                          "type": "string",
+                          "example": "Report verified by moderator."
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid moderation action",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid moderation action"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid moderation action"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - user not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - only Admin or Moderator can moderate reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Report not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Report not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while moderating report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1814,16 +4906,22 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "action"
+                ],
                 "properties": {
                   "action": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "APPROVE"
                   },
                   "reason": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "Report verified by moderator."
                   }
                 }
               }
@@ -1837,8 +4935,8 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Delete a comment from a report",
-        "description": "",
+        "summary": "Delete a comment",
+        "description": "Deletes a specific comment from a report. The user must be authenticated.",
         "parameters": [
           {
             "name": "id",
@@ -1846,7 +4944,9 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Report ID",
+            "example": 1
           },
           {
             "name": "commentId",
@@ -1854,7 +4954,9 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Comment ID",
+            "example": 5
           },
           {
             "name": "authorization",
@@ -1866,10 +4968,169 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Comment deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comment deleted"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comment deleted"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - user not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - user cannot delete this comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comment not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comment not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while deleting comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2134,12 +5395,15 @@
         "tags": [
           "Incidents"
         ],
-        "summary": "Get all incidents with their information and status",
-        "description": "",
+        "summary": "Get all incidents",
+        "description": "Retrieves all incidents with filtering, sorting, and pagination.",
         "parameters": [
           {
             "name": "category",
             "in": "query",
+            "required": false,
+            "description": "Filter incidents by category",
+            "example": "CLOSURE",
             "schema": {
               "type": "string"
             }
@@ -2147,6 +5411,9 @@
           {
             "name": "severity",
             "in": "query",
+            "required": false,
+            "description": "Filter incidents by severity",
+            "example": "HIGH",
             "schema": {
               "type": "string"
             }
@@ -2154,6 +5421,9 @@
           {
             "name": "status",
             "in": "query",
+            "required": false,
+            "description": "Filter incidents by status",
+            "example": "open",
             "schema": {
               "type": "string"
             }
@@ -2161,13 +5431,19 @@
           {
             "name": "checkpoint_id",
             "in": "query",
+            "required": false,
+            "description": "Filter incidents by checkpoint ID",
+            "example": 1,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
             "name": "sortBy",
             "in": "query",
+            "required": false,
+            "description": "Field used for sorting",
+            "example": "created_at",
             "schema": {
               "type": "string"
             }
@@ -2175,6 +5451,9 @@
           {
             "name": "order",
             "in": "query",
+            "required": false,
+            "description": "Sort order: ASC or DESC",
+            "example": "DESC",
             "schema": {
               "type": "string"
             }
@@ -2182,24 +5461,186 @@
           {
             "name": "page",
             "in": "query",
+            "required": false,
+            "description": "Page number",
+            "example": 1,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
             "name": "limit",
             "in": "query",
+            "required": false,
+            "description": "Number of incidents per page",
+            "example": 10,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Incidents retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 100
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "incidents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "category": {
+                            "type": "string",
+                            "example": "CLOSURE"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Road closed due to construction"
+                          },
+                          "severity": {
+                            "type": "string",
+                            "example": "HIGH"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "open"
+                          },
+                          "checkpoint_id": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "example": "2024-01-01T12:00:00Z"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "example": "2024-01-01T12:00:00Z"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 100
+                    },
+                    "page": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "incidents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "category": {
+                            "type": "string",
+                            "example": "CLOSURE"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Road closed due to construction"
+                          },
+                          "severity": {
+                            "type": "string",
+                            "example": "HIGH"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "open"
+                          },
+                          "checkpoint_id": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "example": "2024-01-01T12:00:00Z"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "example": "2024-01-01T12:00:00Z"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while fetching incidents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -2207,8 +5648,8 @@
         "tags": [
           "Incidents"
         ],
-        "summary": "Create a new incident (Any authenticated user)",
-        "description": "",
+        "summary": "Create a new incident",
+        "description": "Allows any authenticated user to create a new incident. The incident is created with open status.",
         "parameters": [
           {
             "name": "authorization",
@@ -2220,16 +5661,162 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Incident created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "category": {
+                      "type": "string",
+                      "example": "CLOSURE"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Road closed due to construction"
+                    },
+                    "severity": {
+                      "type": "string",
+                      "example": "HIGH"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "open"
+                    },
+                    "checkpoint_id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "category": {
+                      "type": "string",
+                      "example": "CLOSURE"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Road closed due to construction"
+                    },
+                    "severity": {
+                      "type": "string",
+                      "example": "HIGH"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "open"
+                    },
+                    "checkpoint_id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Validation error: Missing required fields or invalid data types"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Validation error: Missing required fields or invalid data types"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized: missing or invalid token"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized: missing or invalid token"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while creating incident"
           }
         },
         "security": [
@@ -2238,31 +5825,47 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "title",
+                  "category",
+                  "severity",
+                  "description",
+                  "latitude",
+                  "longitude"
+                ],
                 "properties": {
                   "title": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "Checkpoint closure near Huwwara"
                   },
                   "category": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "CLOSURE"
                   },
                   "severity": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "HIGH"
                   },
                   "description": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "The checkpoint is currently closed and vehicles are waiting."
                   },
                   "latitude": {
-                    "example": "any"
+                    "type": "number",
+                    "example": 32.15643
                   },
                   "longitude": {
-                    "example": "any"
+                    "type": "number",
+                    "example": 35.27006
                   },
                   "checkpoint_id": {
-                    "example": "any"
+                    "type": "integer",
+                    "example": 1
                   }
                 }
               }
@@ -2276,8 +5879,8 @@
         "tags": [
           "Incidents"
         ],
-        "summary": "Get a specific incident by ID",
-        "description": "",
+        "summary": "Get incident by ID",
+        "description": "Retrieves a specific incident with checkpoint name, creator name, and verifier name.",
         "parameters": [
           {
             "name": "id",
@@ -2285,18 +5888,190 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Incident ID",
+            "example": 1
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Incident retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "category": {
+                      "type": "string",
+                      "example": "CLOSURE"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Road closed due to construction"
+                    },
+                    "severity": {
+                      "type": "string",
+                      "example": "HIGH"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "open"
+                    },
+                    "checkpoint_id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "checkpoint_name": {
+                      "type": "string",
+                      "example": "Checkpoint A"
+                    },
+                    "creator_name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "verifier_name": {
+                      "type": "string",
+                      "example": "Jane Smith"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "category": {
+                      "type": "string",
+                      "example": "CLOSURE"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Road closed due to construction"
+                    },
+                    "severity": {
+                      "type": "string",
+                      "example": "HIGH"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "open"
+                    },
+                    "checkpoint_id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "checkpoint_name": {
+                      "type": "string",
+                      "example": "Checkpoint A"
+                    },
+                    "creator_name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "verifier_name": {
+                      "type": "string",
+                      "example": "Jane Smith"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Incident not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Incident not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Incident not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while fetching incident",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2306,8 +6081,8 @@
         "tags": [
           "Incidents"
         ],
-        "summary": "Update incident status (Admin/Moderator only)",
-        "description": "",
+        "summary": "Update incident status",
+        "description": "Allows Admin or Moderator to update an incident status to open, verified, or closed. When an incident is verified, an alert is created ans sent to the subscribed users.",
         "parameters": [
           {
             "name": "id",
@@ -2315,7 +6090,9 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Incident ID",
+            "example": 1
           },
           {
             "name": "authorization",
@@ -2327,22 +6104,258 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Incident status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "category": {
+                      "type": "string",
+                      "example": "CLOSURE"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Road closed due to construction"
+                    },
+                    "severity": {
+                      "type": "string",
+                      "example": "HIGH"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "verified"
+                    },
+                    "checkpoint_id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "example": "2024-01-02T12:00:00Z"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "category": {
+                      "type": "string",
+                      "example": "CLOSURE"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Road closed due to construction"
+                    },
+                    "severity": {
+                      "type": "string",
+                      "example": "HIGH"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "verified"
+                    },
+                    "checkpoint_id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "example": "2024-01-02T12:00:00Z"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid status value. Status must be one of: open, verified, closed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid status value. Status must be one of: open, verified, closed"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid status value. Status must be one of: open, verified, closed"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized: missing or invalid token"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized: missing or invalid token"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - only Admin or Moderator can update incident status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden: only Admin or Moderator can update incident status"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden: only Admin or Moderator can update incident status"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Incident not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Incident not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Incident not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while updating incident status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error while updating incident status"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error while updating incident status"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2351,16 +6364,22 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "status"
+                ],
                 "properties": {
                   "status": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "verified"
                   },
                   "reason": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "Incident verified by moderator after checking reports."
                   }
                 }
               }

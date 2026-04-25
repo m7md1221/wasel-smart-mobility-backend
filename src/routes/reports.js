@@ -486,7 +486,7 @@ router.get("/:id", (req, res, next) => {
             contentType: 'post',
             reason: 'Inappropriate content',
             status: 'pending',  
-            createdAt: '2024-01-01T
+            createdAt: '2024-01-01T00:00:00Z',
             reporter: {
               id: 'user123',
               username: 'reporter1' 
