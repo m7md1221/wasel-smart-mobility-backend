@@ -2048,7 +2048,7 @@
           "Telegram Bot"
         ],
         "summary": "Receive incoming Telegram webhook updates",
-        "description": "",
+        "description": "Receives webhook updates sent by Telegram. If the update contains a message, it is processed by the bot message handler.",
         "parameters": [
           {
             "name": "body",
@@ -2065,10 +2065,22 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Telegram update received and processed successfully"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while handling Telegram webhook",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Error handling Telegram webhook"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
