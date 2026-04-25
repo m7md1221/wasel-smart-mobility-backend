@@ -670,8 +670,8 @@
         "tags": [
           "Route Estimation"
         ],
-        "summary": "Estimate the best route between two locations considering traffic and checkpoints and give alternative routes",
-        "description": "",
+        "summary": "Estimate the best route",
+        "description": "Estimates the best route between two locations while considering traffic, checkpoints, constraints, and alternative routes.",
         "parameters": [
           {
             "name": "authorization",
@@ -683,38 +683,501 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Route estimated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "distanceKm": {
+                      "type": "number",
+                      "example": 150
+                    },
+                    "durationMin": {
+                      "type": "number",
+                      "example": 180
+                    },
+                    "checkpoints": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "trafficLevel": {
+                      "type": "string",
+                      "example": "High"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "distanceKm": {
+                      "type": "number",
+                      "example": 150
+                    },
+                    "durationMin": {
+                      "type": "number",
+                      "example": 180
+                    },
+                    "checkpoints": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "trafficLevel": {
+                      "type": "string",
+                      "example": "High"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid routing request payload for provider",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid routing request payload for provider"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid routing request payload for provider"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - missing or invalid token"
           },
           "404": {
-            "description": "Not Found"
+            "description": "No route found for selected points or coordinates are not routable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No route found for selected points or coordinates are not routable"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Not Found"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No route found for selected points or coordinates are not routable"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Not Found"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "409": {
-            "description": "Conflict"
+            "description": "Route violates selected constraints",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Route violates selected constraints"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "avoidCheckpoints": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "avoidTraffic": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "maxDistanceKm": {
+                          "type": "number",
+                          "example": 120
+                        }
+                      }
+                    },
+                    "route": {
+                      "type": "object",
+                      "properties": {
+                        "distanceKm": {
+                          "type": "number",
+                          "example": 150
+                        },
+                        "durationMin": {
+                          "type": "number",
+                          "example": 180
+                        },
+                        "checkpoints": {
+                          "type": "number",
+                          "example": 5
+                        },
+                        "trafficLevel": {
+                          "type": "string",
+                          "example": "High"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Route violates selected constraints"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "avoidCheckpoints": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "avoidTraffic": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "maxDistanceKm": {
+                          "type": "number",
+                          "example": 120
+                        }
+                      }
+                    },
+                    "route": {
+                      "type": "object",
+                      "properties": {
+                        "distanceKm": {
+                          "type": "number",
+                          "example": 150
+                        },
+                        "durationMin": {
+                          "type": "number",
+                          "example": 180
+                        },
+                        "checkpoints": {
+                          "type": "number",
+                          "example": 5
+                        },
+                        "trafficLevel": {
+                          "type": "string",
+                          "example": "High"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Unexpected route estimation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Routing provider timed out"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Routing provider timed out"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "502": {
-            "description": "Bad Gateway"
+            "description": "Routing provider request failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Routing provider request failed"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 502
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Gateway"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Routing provider request failed"
+                    },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 502
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Gateway"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "503": {
-            "description": "Service Unavailable"
+            "description": "Routing provider rate limit reached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Routing provider rate limit reached"
+                    },
+                    "retryAfter": {
+                      "type": "number",
+                      "example": 60
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Routing provider rate limit reached"
+                    },
+                    "retryAfter": {
+                      "type": "number",
+                      "example": 60
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "504": {
-            "description": "Gateway Timeout"
+            "description": "Routing provider timed out"
           }
         },
         "security": [
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "from",
+                  "to"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "object",
+                    "required": [
+                      "latitude",
+                      "longitude"
+                    ],
+                    "properties": {
+                      "latitude": {
+                        "type": "number",
+                        "example": 31.9522
+                      },
+                      "longitude": {
+                        "type": "number",
+                        "example": 35.2332
+                      }
+                    }
+                  },
+                  "to": {
+                    "type": "object",
+                    "required": [
+                      "latitude",
+                      "longitude"
+                    ],
+                    "properties": {
+                      "latitude": {
+                        "type": "number",
+                        "example": 31.5017
+                      },
+                      "longitude": {
+                        "type": "number",
+                        "example": 34.4668
+                      }
+                    }
+                  },
+                  "constraints": {
+                    "type": "object",
+                    "properties": {
+                      "avoidCheckpoints": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "avoidTraffic": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "maxDistanceKm": {
+                        "type": "number",
+                        "example": 120
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/reports/moderation/queue": {
