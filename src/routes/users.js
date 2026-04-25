@@ -13,14 +13,34 @@ router.post("/signup", validate(createUserSchema), (req, res, next) => {
   // #swagger.description = 'Creates a new user account with name, email, password, and role.'
 
   /* #swagger.requestBody = {
-        required: true,
-        schema: {
-          name: "John Doe",
-          email: "john@example.com",
-          password: "password123",
-          role: "CITIZEN"
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["name", "email", "password"],
+            properties: {
+              name: {
+                type: "string",
+                example: "John Doe"
+              },
+              email: {
+                type: "string",
+                example: "john@example.com"
+              },
+              password: {
+                type: "string",
+                example: "password123"
+              },
+              role: {
+                type: "string",
+                example: "CITIZEN"
+              }
+            }
+          }
         }
-  } */
+      }
+} */
 
   /* #swagger.responses[201] = {
         description: 'User created successfully'
@@ -42,13 +62,27 @@ router.post("/login", (req, res, next) => {
   // #swagger.summary = 'Login a user'
   // #swagger.description = 'logins user in the system by entering email and password, and returns JWT token'
 
-  /* #swagger.requestBody = {
-        required: true,
-        schema: {
-          email: "john@example.com",
-          password: "password123"
+ /* #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["email", "password"],
+            properties: {
+              email: {
+                type: "string",
+                example: "john@example.com"
+              },
+              password: {
+                type: "string",
+                example: "password123"
+              }
+            }
+          }
         }
-  } */
+      }
+} */
 
   /* #swagger.responses[200] = {
         description: 'Authentication successful',
@@ -121,13 +155,26 @@ router.put(
           description: 'User ID'
     } */
 
-    /* #swagger.requestBody = {
-          required: true,
+ /* #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
           schema: {
-            name: "Updated Name",
-            email: "updated@email.com"
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+                example: "Updated Name"
+              },
+              email: {
+                type: "string",
+                example: "updated@email.com"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
     /* #swagger.responses[200] = {
           description: 'User updated successfully'
@@ -154,18 +201,47 @@ router.post(
     // #swagger.description = 'Admin creates new user by entering user's name,email,password,role,confidence score,activation status and authorization status'
     // #swagger.security = [{ BearerAuth: [] }]
 
-    /* #swagger.requestBody = {
-          required: true,
+/* #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
           schema: {
-            name: "Admin Created User",
-            email: "user@email.com",
-            password: "password123",
-            role: "CITIZEN",
-            confidence_score: 50,
-            is_active: true,
-            is_authorized: false
+            type: "object",
+            required: ["name", "email", "password"],
+            properties: {
+              name: {
+                type: "string",
+                example: "Admin Created User"
+              },
+              email: {
+                type: "string",
+                example: "user@email.com"
+              },
+              password: {
+                type: "string",
+                example: "password123"
+              },
+              role: {
+                type: "string",
+                example: "CITIZEN"
+              },
+              confidence_score: {
+                type: "integer",
+                example: 50
+              },
+              is_active: {
+                type: "boolean",
+                example: true
+              },
+              is_authorized: {
+                type: "boolean",
+                example: false
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
     /* #swagger.responses[201] = {
           description: 'User created successfully'
