@@ -61,41 +61,34 @@ router.get("/", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Checkpoints retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Checkpoints retrieved successfully" },
-                data: { type: "object" }
+        schema: {
+          type: 'object',
+          properties: {
+            total: { type: 'integer', example: 100 },
+            page: { type: 'integer', example: 1 },
+            limit: { type: 'integer', example: 10 },
+            checkpoints: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', example: 'checkpoint123' }, 
+                  name: { type: 'string', example: 'Huwwara Checkpoint' },
+                  location: { type: 'string', example: 'Nablus' },
+                  status: { type: 'string', example: 'active' },  
+                  createdAt: { type: 'string', example: '2024-01-01T00:00:00Z' },
+                  updatedAt: { type: 'string', example: '2024-01-02T00:00:00Z' }
+                }
               }
-            },
-            example: {
-              success: true,
-              message: "Checkpoints retrieved successfully",
-              data: { id: 1 }
             }
           }
-        }
+                } 
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while fetching checkpoints',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while fetching checkpoints" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while fetching checkpoints"
-            }
-          }
+        schema: {
+          message: "Server error while fetching checkpoints"
         }
   } */
 
@@ -117,60 +110,30 @@ router.get("/:id", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Checkpoint retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Checkpoint retrieved successfully" },
-                data: { type: "object" }
-              }
-            },
-            example: {
-              success: true,
-              message: "Checkpoint retrieved successfully",
-              data: { id: 1 }
-            }
+        schema: {
+          type: 'object',
+          properties: { 
+            id: { type: 'string', example: 'checkpoint123' },
+            name: { type: 'string', example: 'Huwwara Checkpoint' },
+            location: { type: 'string', example: 'Nablus' },
+            status: { type: 'string', example: 'active' },
+            createdAt: { type: 'string', example: '2024-01-01T00:00:00Z' },
+            updatedAt: { type: 'string', example: '2024-01-02T00:00:00Z' }
           }
         }
   } */
 
   /* #swagger.responses[404] = {
         description: 'Checkpoint not found',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Checkpoint not found" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Checkpoint not found"
-            }
-          }
+        schema: {
+          message: "Checkpoint not found"
         }
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while fetching checkpoint',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while fetching checkpoint" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while fetching checkpoint"
-            }
-          }
+        schema: {
+          message: "Server error while fetching checkpoint"
         }
   } */
 
@@ -192,20 +155,20 @@ router.get("/:id/history", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Checkpoint status history retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Checkpoint status history retrieved successfully" },
-                data: { type: "object" }
+        schema: {
+          type: 'object',
+          properties: { 
+            checkpointId: { type: 'string', example: 'checkpoint123' },
+            history: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  status: { type: 'string', example: 'active' },
+                  changedAt: { type: 'string', example: '2024-01-01T00:00:00Z' },
+                  changedBy: { type: 'string', example: 'adminUser' }
+                }
               }
-            },
-            example: {
-              success: true,
-              message: "Checkpoint status history retrieved successfully",
-              data: { id: 1 }
             }
           }
         }
@@ -213,39 +176,15 @@ router.get("/:id/history", (req, res, next) => {
 
   /* #swagger.responses[404] = {
         description: 'Checkpoint not found',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Checkpoint not found" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Checkpoint not found"
-            }
-          }
+        schema: {
+          message: "Checkpoint not found"
         }
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while fetching checkpoint history',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while fetching checkpoint history" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while fetching checkpoint history"
-            }
-          }
+        schema: {
+          message: "Server error while fetching checkpoint history"
         }
   } */
   return ctrl.getCheckpointHistory(req, res, next);
@@ -296,98 +235,44 @@ router.post(
 
     /* #swagger.responses[201] = {
           description: 'Checkpoint created successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Checkpoint created successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Checkpoint created successfully",
-                data: { id: 1 }
-              }
+          schema: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'checkpoint123' },
+              name: { type: 'string', example: 'Huwwara Checkpoint' },
+              location: { type: 'string', example: 'Nablus' },
+              status: { type: 'string', example: 'active' },
+              createdAt: { type: 'string', example: '2024-01-01T00:00:00Z' },
+              updatedAt: { type: 'string', example: '2024-01-01T00:00:00Z' }
             }
           }
     } */
 
     /* #swagger.responses[400] = {
           description: 'Invalid checkpoint data. Name and city are required',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Invalid checkpoint data. Name and city are required" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Invalid checkpoint data. Name and city are required"
-              }
-            }
+          schema: {
+            message: "Invalid checkpoint data. Name and city are required"
           }
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - missing or invalid token',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - missing or invalid token" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - missing or invalid token"
-              }
-            }
+          schema: {
+            message: "Unauthorized - missing or invalid token"
           }
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Admin or Moderator can create checkpoints',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Admin or Moderator can create checkpoints" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Admin or Moderator can create checkpoints"
-              }
-            }
+          schema: {
+            message: "Forbidden - only Admin or Moderator can create checkpoints"
           }
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while creating checkpoint',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while creating checkpoint" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while creating checkpoint"
-              }
-            }
+          schema: {
+            message: "Server error while creating checkpoint"
           }
     } */
 
@@ -438,117 +323,51 @@ router.put(
 
     /* #swagger.responses[200] = {
           description: 'Checkpoint status updated successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Checkpoint status updated successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Checkpoint status updated successfully",
-                data: { id: 1 }
-              }
+          schema: {
+            type: 'object',
+            properties: { 
+              id: { type: 'string', example: 'checkpoint123' },
+              name: { type: 'string', example: 'Huwwara Checkpoint' },
+              location: { type: 'string', example: 'Nablus' },
+              status: { type: 'string', example: 'closed' },
+              createdAt: { type: 'string', example: '2024-01-01T00:00:00Z' },
+              updatedAt: { type: 'string', example: '2024-01-02T00:00:00Z' }
             }
           }
     } */
 
     /* #swagger.responses[400] = {
           description: 'Invalid status value. Status must be one of: active, closed, restricted',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Invalid status value. Status must be one of: active, closed, restricted" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Invalid status value. Status must be one of: active, closed, restricted"
-              }
-            }
+          schema: {   
+            message: "Invalid status value. Status must be one of: active, closed, restricted"
           }
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - missing or invalid token',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - missing or invalid token" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - missing or invalid token"
-              }
-            }
+          schema: {
+            message: "Unauthorized - missing or invalid token"
           }
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Admin or Moderator can update checkpoint status',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Admin or Moderator can update checkpoint status" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Admin or Moderator can update checkpoint status"
-              }
-            }
+          schema: {
+            message: "Forbidden - only Admin or Moderator can update checkpoint status"
           }
     } */
 
     /* #swagger.responses[404] = {
           description: 'Checkpoint not found',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Checkpoint not found" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Checkpoint not found"
-              }
-            }
-          }
+          schema: {
+            message: "Checkpoint not found"
+          } 
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while updating checkpoint status',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while updating checkpoint status" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while updating checkpoint status"
-              }
-            }
+          schema: {
+            message: "Server error while updating checkpoint status"
           }
     } */
 

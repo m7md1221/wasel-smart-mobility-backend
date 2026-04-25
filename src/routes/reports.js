@@ -41,104 +41,41 @@ router.get(
 
     /* #swagger.responses[200] = {
           description: 'Moderation queue retrieved successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Moderation queue retrieved successfully" },
-                  data: { type: "object" }
+          schema: {
+           message: "Moderation queue retrieved",
+            reports: [
+              {
+                id: '123',
+                contentId: 'abc',
+                contentType: 'post',
+                reason: 'Inappropriate content',
+                status: 'pending',
+                createdAt: '2024-01-01T00:00:00Z',
+                reporter: {
+                  id: 'user123',
+                  username: 'reporter1'
                 }
-              },
-              example: {
-                success: true,
-                message: "Moderation queue retrieved successfully",
-                data: {
-                reports: [
-                  {
-                    id: 101,
-                    user_id: 12,
-                    title: "Checkpoint Delay at Qalandia",
-                    category: "DELAY",
-                    status: "PENDING",
-                    latitude: 31.8603,
-                    longitude: 35.217
-                  },
-                  {
-                    id: 102,
-                    user_id: 15,
-                    title: "Road Closure Near Ramallah",
-                    category: "CLOSURE",
-                    status: "PENDING",
-                    latitude: 31.9056,
-                    longitude: 35.2045
-                  }
-                ],
-                total: 2,
-                page: 0,
-                limit: 20
               }
-              }
-            }
+            ],
+            total: 1,
+            page: 0,
+            limit: 20
           }
+
     } */
 
     /* #swagger.responses[401] = {
-          description: 'Unauthorized - missing or invalid token',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - missing or invalid token" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - missing or invalid token"
-              }
-            }
-          }
+          description: 'Unauthorized - missing or invalid token'
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Admin or Moderator can access moderation queue',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Admin or Moderator can access moderation queue" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Admin or Moderator can access moderation queue"
-              }
-            }
-          }
+          schema:{
+                  message: "Only moderators can access the moderation queue"}
     } */
 
     /* #swagger.responses[500] = {
-          description: 'Server error while retrieving moderation queue',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while retrieving moderation queue" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while retrieving moderation queue"
-              }
-            }
-          }
+          description: 'Server error while retrieving moderation queue'
     } */
   return reportController.getModerationQueue(req, res, next);
   }
@@ -156,85 +93,40 @@ router.get(
 
     /* #swagger.responses[200] = {
           description: 'Moderation statistics retrieved successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Moderation statistics retrieved successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Moderation statistics retrieved successfully",
-                data: {
-                totalReports: 120,
-                pendingReports: 18,
-                resolvedReports: 90,
-                rejectedReports: 12
-              }
+          schema: {
+            message: "Moderation statistics retrieved",
+            stats: {
+              totalReports: 100,
+              pendingReports: 20,
+              resolvedReports: 70,
+              rejectedReports: 10,
+              reportsByReason: {
+                "Inappropriate content": 50,
+                "Spam": 30,
+                "Harassment": 20
               }
             }
-          }
+          } 
+
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - missing or invalid token',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - missing or invalid token" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - missing or invalid token"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
+
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Admin or Moderator can access moderation statistics',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Admin or Moderator can access moderation statistics" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Admin or Moderator can access moderation statistics"
-              }
-            }
-          }
+          schema: {
+                  message: "Forbidden"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while retrieving moderation statistics',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while retrieving moderation statistics" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while retrieving moderation statistics"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}
     } */
 
   return reportController.getModerationStats(req, res, next);
@@ -309,93 +201,50 @@ router.get(
 
     /* #swagger.responses[200] = {
           description: 'Moderation logs retrieved successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Moderation logs retrieved successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Moderation logs retrieved successfully",
-                data: {
-                logs: [
-                  {
-                    id: 5001,
-                    report_id: 101,
-                    action: "APPROVED",
-                    moderator_id: 2,
-                    created_at: "2026-04-25T10:15:00.000Z"
-                  }
-                ],
-                total: 1,
-                page: 0,
-                limit: 50
+          schema: {
+            message: "Moderation logs retrieved",
+            logs: [
+              {
+                id: 'log123',
+                eventType: 'REPORT_MODERATION',
+                action: 'APPROVE',
+                reportId: 'report123',
+                contentId: 'content123',
+                contentType: 'post',
+                performedBy: {
+                  id: 'mod123',
+                  username: 'moderator1'
+                },
+                timestamp: '2024-01-01T00:00:00Z',
+                details: {
+                  reason: 'Inappropriate content',
+                  comment: 'This post violates our guidelines'
+                } 
               }
-              }
-            }
+            ],
+            total: 1,
+            page: 0,
+            limit: 50
           }
+            
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - missing or invalid token',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - missing or invalid token" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - missing or invalid token"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - insufficient role permissions',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - insufficient role permissions" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - insufficient role permissions"
-              }
-            }
-          }
+          schema: {
+                  message: "Forbidden"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while retrieving moderation logs',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while retrieving moderation logs" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while retrieving moderation logs"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}  
     } */
   return reportController.getModerationLogs(req, res, next);
   }
@@ -413,88 +262,55 @@ router.get(
 
     /* #swagger.responses[200] = {
           description: 'Duplicate reports retrieved successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Duplicate reports retrieved successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Duplicate reports retrieved successfully",
-                data: {
-                duplicate_groups: [
+          schema: {
+            message: "Duplicate reports retrieved",
+            duplicates: [
+              {
+                contentId: 'content123',
+                contentType: 'post',
+                reports: [  
+                  {   
+                    id: 'report123',
+                    reason: 'Inappropriate content',
+                    status: 'pending',  
+                    createdAt: '2024-01-01T00:00:00Z',
+                    reporter: {
+                      id: 'user123',
+                      username: 'reporter1'
+                    }
+                  },
                   {
-                    root_report_id: 101,
-                    duplicate_ids: [113, 115],
-                    category: "DELAY"
+                    id: 'report124',
+                    reason: 'Inappropriate content',
+                    status: 'pending',  
+                    createdAt: '2024-01-02T00:00:00Z',  
+                    reporter: {
+                      id: 'user124',
+                      username: 'reporter2'
+                    }
                   }
                 ]
               }
-              }
-            }
+            ]
           }
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - missing or invalid token',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - missing or invalid token" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - missing or invalid token"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Admin or Moderator can access duplicate reports',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Admin or Moderator can access duplicate reports" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Admin or Moderator can access duplicate reports"
-              }
-            }
-          }
+          schema: {
+                  message: "Forbidden"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while retrieving duplicate reports',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while retrieving duplicate reports" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while retrieving duplicate reports"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}
     } */
 
   return reportController.getDuplicateReports(req, res, next);
@@ -573,66 +389,33 @@ router.get("/", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Reports retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Reports retrieved successfully" },
-                data: { type: "object" }
+        schema: {
+          message: "Reports retrieved",
+          reports: [
+            {
+              id: '123',
+              contentId: 'abc',
+              contentType: 'post',  
+              reason: 'Inappropriate content',  
+              status: 'pending',
+              createdAt: '2024-01-01T00:00:00Z',
+              reporter: {
+                id: 'user123',
+
+                username: 'reporter1' 
               }
-            },
-            example: {
-              success: true,
-              message: "Reports retrieved successfully",
-              data: {
-              reports: [
-                {
-                  id: 101,
-                  user_id: 12,
-                  title: "Checkpoint Delay at Qalandia",
-                  category: "DELAY",
-                  status: "PENDING",
-                  latitude: 31.8603,
-                  longitude: 35.217
-                },
-                {
-                  id: 102,
-                  user_id: 15,
-                  title: "Road Closure Near Ramallah",
-                  category: "CLOSURE",
-                  status: "RESOLVED",
-                  latitude: 31.9056,
-                  longitude: 35.2045
-                }
-              ],
-              total: 2,
-              page: 0,
-              limit: 20
             }
-            }
-          }
+          ],  
+          total: 1,
+          page: 0,
+          limit: 20
         }
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while retrieving reports',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while retrieving reports" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while retrieving reports"
-            }
-          }
-        }
+        schema: {
+                message: "Server error"}
   } */
   return reportController.getReports(req, res, next);
 });
@@ -652,54 +435,29 @@ router.get("/stats", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Report statistics retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Report statistics retrieved successfully" },
-                data: { type: "object" }
-              }
+        schema: {
+          message: "Report statistics retrieved",
+          stats: {
+            totalReports: 100,  
+            reportsByCategory: {
+              "CLOSURE": 50,
+              "ACCIDENT": 30, 
+              "HAZARD": 20
             },
-            example: {
-              success: true,
-              message: "Report statistics retrieved successfully",
-              data: {
-              totalReports: 120,
-              byCategory: {
-                DELAY: 50,
-                CLOSURE: 40,
-                INCIDENT: 30
-              },
-              byStatus: {
-                PENDING: 18,
-                RESOLVED: 90,
-                REJECTED: 12
-              }
-            }
+            reportsByStatus: {
+              "PENDING": 20,
+              "RESOLVED": 70,
+              "REJECTED": 10
             }
           }
         }
+
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while retrieving report statistics',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while retrieving report statistics" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while retrieving report statistics"
-            }
-          }
-        }
+        schema: {
+                message: "Server error"}
   } */
   return reportController.getReportStats(req, res, next);
 });
@@ -720,30 +478,18 @@ router.get("/:id", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Report retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Report retrieved successfully" },
-                data: { type: "object" }
-              }
-            },
-            example: {
-              success: true,
-              message: "Report retrieved successfully",
-              data: {
-                id: 101,
-                user_id: 12,
-                title: "Checkpoint Delay at Qalandia",
-                category: "DELAY",
-                description: "Heavy traffic and long waiting time.",
-                status: "PENDING",
-                latitude: 31.8603,
-                longitude: 35.217,
-                confidence_score: 82
-              }
+        schema: {
+          message: "Report retrieved",
+          report: {
+            id: '123',  
+            contentId: 'abc',
+            contentType: 'post',
+            reason: 'Inappropriate content',
+            status: 'pending',  
+            createdAt: '2024-01-01T00:00:00Z',
+            reporter: {
+              id: 'user123',
+              username: 'reporter1' 
             }
           }
         }
@@ -751,40 +497,14 @@ router.get("/:id", (req, res, next) => {
 
   /* #swagger.responses[404] = {
         description: 'Report not found',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Report not found" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Report not found"
-            }
-          }
-        }
+        schema: {
+                message: "Report not found"}
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while retrieving report',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while retrieving report" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while retrieving report"
-            }
-          }
-        }
+        schema: {
+                message: "Server error"}
   } */
   return reportController.getReportById(req, res, next);
 });
@@ -812,59 +532,44 @@ router.get("/:id/audit", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Audit trail retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Audit trail retrieved successfully" },
-                data: { type: "object" }
+        schema: {
+
+          message: "Audit trail retrieved",
+          auditTrail: [
+            {
+              id: 'audit123', 
+              eventType: 'REPORT_CREATED',
+              performedBy: {
+                id: 'user123',  
+                username: 'reporter1'
+              },    
+              timestamp: '2024-01-01T00:00:00Z',
+              details: {
+                reason: 'Inappropriate content' 
               }
             },
-            example: {
-              success: true,
-              message: "Audit trail retrieved successfully",
-              data: {
-              auditTrail: [
-                {
-                  id: 9001,
-                  report_id: 101,
-                  action: "CREATED",
-                  actor_id: 12,
-                  created_at: "2026-04-25T09:00:00.000Z"
-                },
-                {
-                  id: 9002,
-                  report_id: 101,
-                  action: "APPROVED",
-                  actor_id: 2,
-                  created_at: "2026-04-25T10:15:00.000Z"
-                }
-              ]
+            {
+              id: 'audit124', 
+              eventType: 'REPORT_MODERATED',
+              performedBy: {  
+                id: 'mod123', 
+                username: 'moderator1'    
+              },      
+              timestamp: '2024-01-02T00:00:00Z',
+              details: {
+                action: 'APPROVE',
+                comment: 'This report 
+violates our guidelines'  
+              }
             }
-            }
-          }
+          ]
         }
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while retrieving audit trail',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while retrieving audit trail" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while retrieving audit trail"
-            }
-          }
-        }
+        schema: {
+                message: "Server error"}
   } */
 
   return reportController.getAuditTrail(req, res, next);
@@ -901,74 +606,30 @@ router.get("/:id/comments", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Comments retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Comments retrieved successfully" },
-                data: { type: "object" }
-              }
-            },
-            example: {
-              success: true,
-              message: "Comments retrieved successfully",
-              data: {
-              comments: [
-                {
-                  id: 301,
-                  report_id: 101,
-                  user_id: 22,
-                  comment: "Traffic is moving slowly but still blocked.",
-                  created_at: "2026-04-25T10:20:00.000Z"
-                }
-              ],
-              total: 1,
-              page: 0,
-              limit: 50
-            }
-            }
-          }
+        schema: { 
+          message: "Comments retrieved",
+          comments: [
+            {
+              id: 'comment123',
+              content: 'This is a comment on the report.',
+
+            } ],
+          total: 1,
+          page: 0,
+          limit: 50
         }
   } */
 
   /* #swagger.responses[404] = {
         description: 'Report or comments not found',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Report or comments not found" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Report or comments not found"
-            }
-          }
-        }
+        schema: {
+                message: "Report or comments not found"}
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while retrieving comments',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while retrieving comments" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while retrieving comments"
-            }
-          }
-        }
+        schema: {
+                message: "Server error"}
   } */
   return reportController.getComments(req, res, next);
 });
@@ -1020,144 +681,65 @@ router.post(
 
     /* #swagger.responses[201] = {
           description: 'Report submitted successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Report submitted successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Report submitted successfully",
-                data: {
-                id: 101,
-                user_id: 12,
-                title: "Checkpoint Delay at Qalandia",
-                category: "DELAY",
-                description: "Heavy traffic and long waiting time.",
-                status: "PENDING",
-                latitude: 31.8603,
-                longitude: 35.217,
-                confidence_score: 82
-              }
+          schema: {
+            message: "Report submitted",
+            report: {
+              id: '123',
+              contentId: 'abc',
+              contentType: 'post',
+              reason: 'Inappropriate content',
+              status: 'pending',
+              createdAt: '2024-01-01T00:00:00Z',
+              reporter: {
+                id: 'user123',
+                username: 'reporter1'
               }
             }
-          }
+          } 
     } */
 
     /* #swagger.responses[200] = {
           description: 'Report submitted successfully, but similar reports exist nearby',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Report submitted successfully, but similar reports exist nearby" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Report submitted successfully, but similar reports exist nearby",
-                data: {
-                report: {
-                  id: 120,
-                  user_id: 12,
-                  title: "Checkpoint Delay at Qalandia",
-                  category: "DELAY",
-                  status: "PENDING",
-                  latitude: 31.8603,
-                  longitude: 35.217
-                },
-                similar_reports: [
-                  { id: 101, title: "Checkpoint Delay at Qalandia" },
-                  { id: 113, title: "Long Queue at Qalandia" }
-                ]
-              }
+          schema: {
+            message: "Report submitted, but similar reports exist nearby",
+            report: {
+              id: '123',
+              contentId: 'abc',
+              contentType: 'post',
+              reason: 'Inappropriate content',
+              status: 'pending',
+              createdAt: '2024-01-01T00:00:00Z',  
+              reporter: {
+                id: 'user123',
+                username: 'reporter1'
               }
             }
-          }
+          } 
     } */
 
     /* #swagger.responses[400] = {
           description: 'Invalid report data',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Invalid report data" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Invalid report data"
-              }
-            }
-          }
+          schema: {
+                  message: "Invalid report data"}
+
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - user not authenticated',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - user not authenticated" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - user not authenticated"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Citizen or Admin can submit reports',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Citizen or Admin can submit reports" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Citizen or Admin can submit reports"
-              }
-            }
-          }
+          schema: {
+                  message: "Forbidden"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while submitting report',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while submitting report" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while submitting report"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}
     } */
 
     return reportController.submitReport(req, res, next);
@@ -1202,107 +784,50 @@ router.post(
 
     /* #swagger.responses[200] = {
           description: 'Vote recorded successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Vote recorded successfully" },
-                  data: { type: "object" }
-                }
+          schema: {
+            message: "Vote recorded",
+            report: {
+              id: '123',
+              contentId: 'abc',
+              contentType: 'post',
+              reason: 'Inappropriate content',
+              status: 'pending',
+              createdAt: '2024-01-01T00:00:00Z',
+              reporter: {
+                id: 'user123',
+                username: 'reporter1'
               },
-              example: {
-                success: true,
-                message: "Vote recorded successfully",
-                data: {
-                report: {
-                  id: 101,
-                  upvotes: 17,
-                  downvotes: 2,
-                  score: 15
-                },
-                user_vote: "UPVOTE"
-              }
+              votes: {
+                upvotes: 10,  
+                downvotes: 2
               }
             }
           }
+
     } */
 
     /* #swagger.responses[400] = {
           description: 'Invalid vote value',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Invalid vote value" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Invalid vote value"
-              }
-            }
-          }
+          schema: {
+                  message: "Invalid vote value"}
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - user not authenticated',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - user not authenticated" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - user not authenticated"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
     } */
 
     /* #swagger.responses[404] = {
           description: 'Report not found',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Report not found" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Report not found"
-              }
-            }
-          }
+          schema: {
+                  message: "Report not found"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while voting on report',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while voting on report" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while voting on report"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}
     } */
 
     return reportController.voteOnReport(req, res, next);
@@ -1347,105 +872,43 @@ router.post(
 
     /* #swagger.responses[201] = {
           description: 'Comment added successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Comment added successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Comment added successfully",
-                data: {
-                id: 301,
-                report_id: 101,
-                user_id: 22,
-                comment: "Traffic is moving slowly but still blocked.",
-                created_at: "2026-04-25T10:20:00.000Z"
-              }
+          schema: {
+            message: "Comment added",
+            comment: {
+              id: 'comment123',
+              content: 'This is a comment on the report.',
+              createdAt: '2024-01-01T00:00:00Z',
+              commenter: {
+                id: 'user123',
+                username: 'commenter1'
               }
             }
-          }
+         }
+
     } */
 
     /* #swagger.responses[400] = {
           description: 'Invalid comment data',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Invalid comment data" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Invalid comment data"
-              }
-            }
-          }
+          schema: {
+                  message: "Invalid comment data"}
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - user not authenticated',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - user not authenticated" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - user not authenticated"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
     } */
 
     /* #swagger.responses[404] = {
           description: 'Report not found',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Report not found" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Report not found"
-              }
-            }
-          }
+          schema: {
+                  message: "Report not found"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while adding comment',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while adding comment" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while adding comment"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}
     } */
     return reportController.addComment(req, res, next);
   }
@@ -1494,124 +957,57 @@ router.post(
 
     /* #swagger.responses[200] = {
           description: 'Report moderated successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Report moderated successfully" },
-                  data: { type: "object" }
-                }
+          schema: {
+            message: "Report moderated",
+            report: {
+              id: '123',
+              contentId: 'abc',
+              contentType: 'post',
+              reason: 'Inappropriate content',
+              status: 'approved',
+              createdAt: '2024-01-01T00:00:00Z',
+              reporter: {
+                id: 'user123',
+                username: 'reporter1'
+              },  
+              moderator: {
+                id: 'mod123',
+                username: 'moderator1'
               },
-              example: {
-                success: true,
-                message: "Report moderated successfully",
-                data: {
-                id: 101,
-                status: "RESOLVED",
-                moderated_by: 2,
-                moderation_reason: "Verified by moderator",
-                updated_at: "2026-04-25T10:15:00.000Z"
-              }
-              }
+              moderationReason: 'Report verified by moderator.'
             }
-          }
+          } 
+
     } */
 
     /* #swagger.responses[400] = {
           description: 'Invalid moderation action',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Invalid moderation action" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Invalid moderation action"
-              }
-            }
-          }
+          schema: {
+                  message: "Invalid moderation action"} 
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - user not authenticated',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - user not authenticated" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - user not authenticated"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Admin or Moderator can moderate reports',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Admin or Moderator can moderate reports" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Admin or Moderator can moderate reports"
-              }
-            }
-          }
+          schema: {
+                  message: "Forbidden"}
     } */
 
     /* #swagger.responses[404] = {
           description: 'Report not found',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Report not found" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Report not found"
-              }
-            }
-          }
+          schema: {
+                  message: "Report not found"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while moderating report',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while moderating report" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while moderating report"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}
     } */
     return reportController.moderateReport(req, res, next);
   }
@@ -1633,101 +1029,34 @@ router.delete("/:id", authentication.checkAuth,authorization.authorizeRole("ADMI
 
     /* #swagger.responses[200] = {
           description: 'Report deleted successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Report deleted successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Report deleted successfully",
-                data: {
-                deletedReportId: 101
-              }
-              }
-            }
+          schema: {
+            message: "Report deleted"
           }
+          
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - user not authenticated',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - user not authenticated" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - user not authenticated"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Admin or Moderator can delete reports',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Admin or Moderator can delete reports" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Admin or Moderator can delete reports"
-              }
-            }
-          }
+          schema: {
+                  message: "Forbidden"}
     } */
 
     /* #swagger.responses[404] = {
           description: 'Report not found',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Report not found" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Report not found"
-              }
-            }
-          }
+          schema: {
+                  message: "Report not found"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while deleting report',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while deleting report" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while deleting report"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}
     } */
 
   return reportController.deleteReport(req, res, next);
@@ -1761,102 +1090,33 @@ router.delete(
 
     /* #swagger.responses[200] = {
           description: 'Comment deleted successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Comment deleted successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Comment deleted successfully",
-                data: {
-                deletedCommentId: 301,
-                reportId: 101
-              }
-              }
-            }
+          schema: {
+            message: "Comment deleted"
           }
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - user not authenticated',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - user not authenticated" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - user not authenticated"
-              }
-            }
-          }
+          schema: {
+                  message: "Unauthorized"}
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - user cannot delete this comment',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - user cannot delete this comment" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - user cannot delete this comment"
-              }
-            }
-          }
+          schema: {
+                  message: "Forbidden"}
     } */
 
     /* #swagger.responses[404] = {
           description: 'Comment not found',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Comment not found" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Comment not found"
-              }
-            }
-          }
+          schema: {
+                  message: "Comment not found"}
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while deleting comment',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while deleting comment" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while deleting comment"
-              }
-            }
-          }
+          schema: {
+                  message: "Server error"}
     } */
     return reportController.deleteComment(req, res, next);
   }

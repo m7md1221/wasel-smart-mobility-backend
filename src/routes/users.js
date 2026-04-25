@@ -43,33 +43,33 @@ router.post("/signup", validate(createUserSchema), (req, res, next) => {
 } */
 
   /* #swagger.responses[201] = {
-        description: 'User created successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "User created successfully" },
-                data: { type: "object" }
+      description: 'User created successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User created successfully"
+              },
+              user: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  name: { type: "string", example: "John Doe" },
+                  email: { type: "string", example: "example@email.com" },
+                  role: { type: "string", example: "CITIZEN" },
+                  confidence_score: { type: "integer", example: 50 },
+                  is_active: { type: "boolean", example: true },
+                  is_authorized: { type: "boolean", example: false }
+                }
               }
-            },
-            example: {
-              success: true,
-              message: "User created successfully",
-              data: {
-              id: 1,
-              name: "John Doe",
-              email: "john@example.com",
-              role: "CITIZEN",
-              is_active: true,
-              is_authorized: false,
-              confidence_score: 75
-            }
             }
           }
         }
-  } */
+      }
+} */
 
 /* #swagger.responses[400] = {
       description: 'User already exists',
@@ -78,13 +78,11 @@ router.post("/signup", validate(createUserSchema), (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "User already exists" }
+              message: {
+                type: "string",
+                example: "User with this email already exists"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "User already exists"
           }
         }
       }
@@ -97,13 +95,11 @@ router.post("/signup", validate(createUserSchema), (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error" }
+              message: {
+                type: "string",
+                example: "Error creating user"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error"
           }
         }
       }
@@ -141,29 +137,14 @@ router.post("/login", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Authentication successful',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Authentication successful" },
-                data: { type: "object" }
-              }
-            },
-            example: {
-              success: true,
-              message: "Authentication successful",
-              data: {
-              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.sample-token",
-              user: {
-                id: 1,
-                name: "John Doe",
-                email: "john@example.com",
-                role: "CITIZEN"
-              }
-            }
-            }
+        schema: {
+          message: "Authentication successful",
+          token: "JWT_TOKEN",
+          user: {
+            id: 1,
+            name: "John Doe",
+            email: "john@example.com",
+            role: "CITIZEN"
           }
         }
   } */
@@ -175,13 +156,11 @@ router.post("/login", (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Invalid credentials" }
+              message: {
+                type: "string",
+                example: "Invalid email or password"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Invalid credentials"
           }
         }
       }
@@ -194,13 +173,11 @@ router.post("/login", (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Account is inactive" }
+              message: {
+                type: "string",
+                example: "Account is inactive"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Account is inactive"
           }
         }
       }
@@ -213,13 +190,11 @@ router.post("/login", (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error" }
+              message: {
+                type: "string",
+                example: "Error during authentication"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error"
           }
         }
       }
@@ -242,22 +217,22 @@ router.get("/myprofile", authentication.checkAuth, (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "Profile found successfully" },
-              data: { type: "object" }
-            }
-          },
-          example: {
-            success: true,
-            message: "Profile found successfully",
-            data: {
-              id: 1,
-              name: "John Doe",
-              email: "john@example.com",
-              role: "CITIZEN",
-              is_active: true,
-              is_authorized: false,
-              confidence_score: 75
+              message: {
+                type: "string",
+                example: "profile found succesfully"
+              },
+              user: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  name: { type: "string", example: "John Doe" },
+                  email: { type: "string", example: "john@example.com" },
+                  role: { type: "string", example: "CITIZEN" },
+                  confidence_score: { type: "integer", example: 50 },
+                  is_active: { type: "boolean", example: true },
+                  is_authorized: { type: "boolean", example: false }
+                }
+              }
             }
           }
         }
@@ -271,13 +246,11 @@ router.get("/myprofile", authentication.checkAuth, (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "User not found" }
+              message: {
+                type: "string",
+                example: "User not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "User not found"
           }
         }
       }
@@ -290,13 +263,11 @@ router.get("/myprofile", authentication.checkAuth, (req, res, next) => {
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error" }
+              message: {
+                type: "string",
+                example: "Error fetching profile"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error"
           }
         }
       }
@@ -346,33 +317,33 @@ router.put(
 } */
 
    /* #swagger.responses[200] = {
-         description: 'User updated successfully',
-         content: {
-           "application/json": {
-             schema: {
-               type: "object",
-               properties: {
-                 success: { type: "boolean", example: true },
-                 message: { type: "string", example: "User updated successfully" },
-                 data: { type: "object" }
-               }
-             },
-             example: {
-               success: true,
-               message: "User updated successfully",
-               data: {
-               id: 1,
-               name: "Updated Name",
-               email: "updated@email.com",
-               role: "CITIZEN",
-               is_active: true,
-               is_authorized: false,
-               confidence_score: 80
-             }
-             }
-           }
-         }
-   } */
+      description: 'User updated successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User updated successfully"
+              },
+              user: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  name: { type: "string", example: "Updated Name" },
+                  email: { type: "string", example: "updated@email.com" },
+                  role: { type: "string", example: "CITIZEN" },
+                  confidence_score: { type: "integer", example: 50 },
+                  is_active: { type: "boolean", example: true },
+                  is_authorized: { type: "boolean", example: false }
+                }
+              }
+            }
+          }
+        }
+      }
+} */
 
 /* #swagger.responses[404] = {
       description: 'User not found',
@@ -381,13 +352,11 @@ router.put(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "User not found" }
+              message: {
+                type: "string",
+                example: "User not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "User not found"
           }
         }
       }
@@ -458,22 +427,10 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "User created successfully" },
-              data: { type: "object" }
-            }
-          },
-          example: {
-            success: true,
-            message: "User created successfully",
-            data: {
-              id: 1,
-              name: "John Doe",
-              email: "john@example.com",
-              role: "CITIZEN",
-              is_active: true,
-              is_authorized: false,
-              confidence_score: 75
+              message: {
+                type: "string",
+                example: "User created successfully"
+              }
             }
           }
         }
@@ -487,13 +444,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "User with this email already exists" }
+              message: {
+                type: "string",
+                example: "User with this email already exists"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "User with this email already exists"
           }
         }
       }
@@ -506,13 +461,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Error creating user" }
+              message: {
+                type: "string",
+                example: "Error creating user"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Error creating user"
           }
         }
       }
@@ -546,16 +499,10 @@ router.delete(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "User deleted successfully" },
-              data: { type: "object" }
-            }
-          },
-          example: {
-            success: true,
-            message: "User deleted successfully",
-            data: {
-              deletedUserId: 1
+              message: {
+                type: "string",
+                example: "User deleted successfully"
+              }
             }
           }
         }
@@ -569,13 +516,11 @@ router.delete(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Invalid user ID" }
+              message: {
+                type: "string",
+                example: "Invalid user ID"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Invalid user ID"
           }
         }
       }
@@ -588,13 +533,11 @@ router.delete(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "User not found" }
+              message: {
+                type: "string",
+                example: "User not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "User not found"
           }
         }
       }
@@ -607,13 +550,11 @@ router.delete(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Error deleting user" }
+              message: {
+                type: "string",
+                example: "Error deleting user"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Error deleting user"
           }
         }
       }
@@ -644,13 +585,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Invalid user ID or user is already deactivated" }
+              message: {
+                type: "string",
+                example: "Invalid user ID"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Invalid user ID or user is already deactivated"
           }
         }
       }
@@ -663,13 +602,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "User not found" }
+              message: {
+                type: "string",
+                example: "User not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "User not found"
           }
         }
       }
@@ -682,13 +619,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Error deactivating user" }
+              message: {
+                type: "string",
+                example: "Error deactivating user"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Error deactivating user"
           }
         }
       }
@@ -701,22 +636,10 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "User deactivated successfully" },
-              data: { type: "object" }
-            }
-          },
-          example: {
-            success: true,
-            message: "User deactivated successfully",
-            data: {
-              id: 1,
-              name: "John Doe",
-              email: "john@example.com",
-              role: "CITIZEN",
-              is_active: false,
-              is_authorized: false,
-              confidence_score: 75
+              message: {
+                type: "string",
+                example: "User deactivated successfully"
+              }
             }
           }
         }
@@ -742,23 +665,21 @@ router.post(
           type: 'integer'
     } */
    /* #swagger.responses[400] = {
-         description: 'Invalid user ID or user is already active',
-         content: {
-           "application/json": {
-             schema: {
-               type: "object",
-               properties: {
-                 success: { type: "boolean", example: false },
-                 message: { type: "string", example: "Invalid user ID or user is already active" }
-               }
-             },
-             example: {
-               success: false,
-               message: "Invalid user ID or user is already active"
-             }
-           }
-         }
-   } */
+      description: 'Invalid user ID or user is already active',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid user ID"
+              }
+            }
+          }
+        }
+      }
+} */
 
 /* #swagger.responses[404] = {
       description: 'User not found',
@@ -767,13 +688,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "User not found" }
+              message: {
+                type: "string",
+                example: "User not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "User not found"
           }
         }
       }
@@ -786,13 +705,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Error activating user" }
+              message: {
+                type: "string",
+                example: "Error activating user"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Error activating user"
           }
         }
       }
@@ -805,22 +722,10 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "User activated successfully" },
-              data: { type: "object" }
-            }
-          },
-          example: {
-            success: true,
-            message: "User activated successfully",
-            data: {
-              id: 1,
-              name: "John Doe",
-              email: "john@example.com",
-              role: "CITIZEN",
-              is_active: true,
-              is_authorized: false,
-              confidence_score: 75
+              message: {
+                type: "string",
+                example: "User activated successfully"
+              }
             }
           }
         }
@@ -850,26 +755,17 @@ router.get(
           description: 'User found successfully',
           content: {
             "application/json": {
-              schema: {
+              schema: { 
                 type: "object",
                 properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "User found successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "User found successfully",
-                data: {
-              id: 1,
-              name: "John Doe",
-              email: "john@example.com",
-              role: "CITIZEN",
-              is_active: true,
-              is_authorized: false,
-              confidence_score: 75
-            }
+                  id: { type: "integer", example: 1 },
+                  name: { type: "string", example: "John Doe" },
+                  email: { type: "string", example: "john@example.com" },
+                  role: { type: "string", example: "CITIZEN" },
+                  confidence_score: { type: "integer", example: 50 },   
+                  is_active: { type: "boolean", example: true },
+                  is_authorized: { type: "boolean", example: false }
+                } 
               }
             }
           }
@@ -879,16 +775,11 @@ router.get(
           description: 'User not found',
           content: {
             "application/json": {
-              schema: {
+              schema: { 
                 type: "object",
                 properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "User not found" }
+                  message: { type: "string", example: "User not found" },
                 }
-              },
-              example: {
-                success: false,
-                message: "User not found"
               }
             }
           }
@@ -911,41 +802,27 @@ router.get(
     // #swagger.security = [{ BearerAuth: [] }]
 
   /* #swagger.responses[200] = {
-        description: 'List of users',
-        content: {
-          "application/json": {
-            schema: {
+      description: 'List of users',
+      content: {
+        "application/json": {
+          schema: {
+            type: "array",
+            items: {
               type: "object",
               properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "List of users" },
-                data: { type: "object" }
+                id: { type: "integer", example: 1 },
+                name: { type: "string", example: "John Doe" },
+                email: { type: "string", example: "john@example.com" },
+                role: { type: "string", example: "CITIZEN" },
+                confidence_score: { type: "integer", example: 50 },
+                is_active: { type: "boolean", example: true },
+                is_authorized: { type: "boolean", example: false }
               }
-            },
-            example: {
-              success: true,
-              message: "List of users",
-              data: {
-              users: [
-                {
-                  id: 1,
-                  name: "John Doe",
-                  email: "john@example.com",
-                  role: "CITIZEN"
-                },
-                {
-                  id: 2,
-                  name: "Maya Hassan",
-                  email: "maya@example.com",
-                  role: "MODERATOR"
-                }
-              ],
-              total: 2
-            }
             }
           }
         }
-  } */
+      }
+} */
 
 /* #swagger.responses[404] = {
       description: 'Users not found',
@@ -954,13 +831,11 @@ router.get(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Users not found" }
+              message: {
+                type: "string",
+                example: "No users found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Users not found"
           }
         }
       }
@@ -973,13 +848,11 @@ router.get(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Error fetching users" }
+              message: {
+                type: "string",
+                example: "Error fetching users"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Error fetching users"
           }
         }
       }

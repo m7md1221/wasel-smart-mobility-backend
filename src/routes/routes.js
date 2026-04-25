@@ -61,15 +61,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "Route estimated successfully" },
-              data: { type: "object" }
+              distanceKm: { type: "number", example: 150 },
+              durationMin: { type: "number", example: 180 },
+              checkpoints: { type: "integer", example: 5 },
+              trafficLevel: { type: "string", example: "High" }
             }
-          },
-          example: {
-            success: true,
-            message: "Route estimated successfully",
-            data: { id: 1 }
           }
         }
       }
@@ -82,13 +78,18 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Invalid routing request payload for provider" }
+              message: {
+                type: "string",
+                example: "Invalid routing request payload for provider"
+              },
+              details: {
+                type: "object",
+                properties: {
+                  status: { type: "integer", example: 400 },
+                  message: { type: "string", example: "Bad Request" }
+                }
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Invalid routing request payload for provider"
           }
         }
       }
@@ -101,13 +102,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Unauthorized - missing or invalid token" }
+              message: {
+                type: "string",
+                example: "Unauthorized - missing or invalid token"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Unauthorized - missing or invalid token"
           }
         }
       }
@@ -120,13 +119,18 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "No route found for selected points or coordinates are not routable" }
+              message: {
+                type: "string",
+                example: "No route found for selected points or coordinates are not routable"
+              },
+              details: {
+                type: "object",
+                properties: {
+                  status: { type: "integer", example: 404 },
+                  message: { type: "string", example: "Not Found" }
+                }
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "No route found for selected points or coordinates are not routable"
           }
         }
       }
@@ -139,13 +143,28 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Route violates selected constraints" }
+              message: {
+                type: "string",
+                example: "Route violates selected constraints"
+              },
+              details: {
+                type: "object",
+                properties: {
+                  avoidCheckpoints: { type: "boolean", example: true },
+                  avoidTraffic: { type: "boolean", example: true },
+                  maxDistanceKm: { type: "number", example: 120 }
+                }
+              },
+              route: {
+                type: "object",
+                properties: {
+                  distanceKm: { type: "number", example: 150 },
+                  durationMin: { type: "number", example: 180 },
+                  checkpoints: { type: "integer", example: 5 },
+                  trafficLevel: { type: "string", example: "High" }
+                }
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Route violates selected constraints"
           }
         }
       }
@@ -158,13 +177,18 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Routing provider request failed" }
+              message: {
+                type: "string",
+                example: "Routing provider request failed"
+              },
+              details: {
+                type: "object",
+                properties: {
+                  status: { type: "integer", example: 502 },
+                  message: { type: "string", example: "Bad Gateway" }
+                }
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Routing provider request failed"
           }
         }
       }
@@ -177,13 +201,15 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Routing provider rate limit reached" }
+              message: {
+                type: "string",
+                example: "Routing provider rate limit reached"
+              },
+              retryAfter: {
+                type: "integer",
+                example: 60
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Routing provider rate limit reached"
           }
         }
       }
@@ -196,13 +222,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Routing provider timed out" }
+              message: {
+                type: "string",
+                example: "Routing provider timed out"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Routing provider timed out"
           }
         }
       }
@@ -215,13 +239,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Unexpected route estimation error" }
+              message: {
+                type: "string",
+                example: "Unexpected route estimation error"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Unexpected route estimation error"
           }
         }
       }

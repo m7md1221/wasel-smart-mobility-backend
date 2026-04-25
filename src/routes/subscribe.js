@@ -46,15 +46,26 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "Subscription created successfully" },
-              data: { type: "object" }
+              message: {
+                type: "string",
+                example: "Subscription created successfully"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  subscriptionId: { type: "integer", example: 1 },
+                  userId: { type: "integer", example: 3 },
+                  category: { type: "string", example: "CLOSURE" },
+                  latitude: { type: "number", example: 31.9522 },
+                  longitude: { type: "number", example: 35.2332 },
+                  radius_km: { type: "number", example: 5 },
+                  createdAt: {
+                    type: "string",
+                    example: "2026-04-25T10:00:00.000Z"
+                  }
+                }
+              }
             }
-          },
-          example: {
-            success: true,
-            message: "Subscription created successfully",
-            data: { id: 1 }
           }
         }
       }
@@ -67,13 +78,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Invalid subscription data or subscription already exists" }
+              message: {
+                type: "string",
+                example: "Subscription already exists for this user"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Invalid subscription data or subscription already exists"
           }
         }
       }
@@ -86,13 +95,15 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Missing or invalid token" }
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Missing or invalid token"
           }
         }
       }
@@ -105,13 +116,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Forbidden - only citizens can create subscriptions" }
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Forbidden - only citizens can create subscriptions"
           }
         }
       }
@@ -124,13 +133,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error while creating subscription" }
+              message: {
+                type: "string",
+                example: "Error creating subscription for this user"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error while creating subscription"
           }
         }
       }
@@ -162,15 +169,15 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "All subscriptions deleted successfully" },
-              data: { type: "object" }
+              message: {
+                type: "string",
+                example: "All subscriptions deleted successfully"
+              },
+              deletedCount: {
+                type: "integer",
+                example: 3
+              }
             }
-          },
-          example: {
-            success: true,
-            message: "All subscriptions deleted successfully",
-            data: { id: 1 }
           }
         }
       }
@@ -183,13 +190,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "No subscriptions found for this user" }
+              message: {
+                type: "string",
+                example: "No subscriptions found for this user"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "No subscriptions found for this user"
           }
         }
       }
@@ -202,13 +207,15 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Missing or invalid token" }
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Missing or invalid token"
           }
         }
       }
@@ -221,13 +228,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Forbidden - only citizens can delete subscriptions" }
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Forbidden - only citizens can delete subscriptions"
           }
         }
       }
@@ -240,13 +245,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error while deleting subscription" }
+              message: {
+                type: "string",
+                example: "server error message"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error while deleting subscription"
           }
         }
       }
@@ -277,25 +280,21 @@ router.post(
       }
 } */
    /* #swagger.responses[200] = {
-         description: 'Category subscription deleted successfully',
-         content: {
-           "application/json": {
-             schema: {
-               type: "object",
-               properties: {
-                 success: { type: "boolean", example: true },
-                 message: { type: "string", example: "Category subscription deleted successfully" },
-                 data: { type: "object" }
-               }
-             },
-             example: {
-               success: true,
-               message: "Category subscription deleted successfully",
-               data: { id: 1 }
-             }
-           }
-         }
-   } */
+      description: 'Category subscription deleted successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "subscription deleted successfully"
+              }
+            }
+          }
+        }
+      }
+} */
 
 /* #swagger.responses[404] = {
       description: 'Subscription not found',
@@ -304,13 +303,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Subscription not found" }
+              message: {
+                type: "string",
+                example: "Subscription not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Subscription not found"
           }
         }
       }
@@ -323,13 +320,15 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Missing or invalid token" }
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Missing or invalid token"
           }
         }
       }
@@ -342,13 +341,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Forbidden" }
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Forbidden"
           }
         }
       }
@@ -361,13 +358,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error while deleting subscription" }
+              message: {
+                type: "string",
+                example: "server error message"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error while deleting subscription"
           }
         }
       }
@@ -401,25 +396,21 @@ router.post(
     } */
 
    /* #swagger.responses[200] = {
-         description: 'Location subscription deleted successfully',
-         content: {
-           "application/json": {
-             schema: {
-               type: "object",
-               properties: {
-                 success: { type: "boolean", example: true },
-                 message: { type: "string", example: "Location subscription deleted successfully" },
-                 data: { type: "object" }
-               }
-             },
-             example: {
-               success: true,
-               message: "Location subscription deleted successfully",
-               data: { id: 1 }
-             }
-           }
-         }
-   } */
+      description: 'Location subscription deleted successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "subscription deleted successfully"
+              }
+            }
+          }
+        }
+      }
+} */
 
 /* #swagger.responses[404] = {
       description: 'Subscription not found',
@@ -428,13 +419,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Subscription not found" }
+              message: {
+                type: "string",
+                example: "Subscription not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Subscription not found"
           }
         }
       }
@@ -447,13 +436,15 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Missing or invalid token" }
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Missing or invalid token"
           }
         }
       }
@@ -466,13 +457,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Forbidden" }
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Forbidden"
           }
         }
       }
@@ -485,13 +474,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error while deleting subscription" }
+              message: {
+                type: "string",
+                example: "server error message"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error while deleting subscription"
           }
         }
       }
@@ -528,15 +515,22 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "Category subscription updated successfully" },
-              data: { type: "object" }
+              message: {
+                type: "string",
+                example: "Category subscription updated"
+              },
+              subscription: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  user_id: { type: "integer", example: 3 },
+                  category: { type: "string", example: "DELAY" },
+                  latitude: { type: "number", example: 31.9522 },
+                  longitude: { type: "number", example: 35.2332 },
+                  radius_km: { type: "number", example: 5 }
+                }
+              }
             }
-          },
-          example: {
-            success: true,
-            message: "Category subscription updated successfully",
-            data: { id: 1 }
           }
         }
       }
@@ -549,13 +543,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Invalid update request" }
+              message: {
+                type: "string",
+                example: "User is already subscribed to this category"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Invalid update request"
           }
         }
       }
@@ -568,13 +560,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Subscription not found" }
+              message: {
+                type: "string",
+                example: "Subscription not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Subscription not found"
           }
         }
       }
@@ -587,13 +577,15 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Missing or invalid token" }
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Missing or invalid token"
           }
         }
       }
@@ -606,13 +598,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Forbidden" }
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Forbidden"
           }
         }
       }
@@ -625,13 +615,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error while updating subscription" }
+              message: {
+                type: "string",
+                example: "server error message"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error while updating subscription"
           }
         }
       }
@@ -671,15 +659,22 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: true },
-              message: { type: "string", example: "Location subscription updated successfully" },
-              data: { type: "object" }
+              message: {
+                type: "string",
+                example: "Location subscription updated"
+              },
+              subscription: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  user_id: { type: "integer", example: 3 },
+                  category: { type: "string", example: "CLOSURE" },
+                  latitude: { type: "number", example: 31.9522 },
+                  longitude: { type: "number", example: 35.2332 },
+                  radius_km: { type: "number", example: 10 }
+                }
+              }
             }
-          },
-          example: {
-            success: true,
-            message: "Location subscription updated successfully",
-            data: { id: 1 }
           }
         }
       }
@@ -692,13 +687,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Invalid update request" }
+              message: {
+                type: "string",
+                example: "User is already subscribed to this location"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Invalid update request"
           }
         }
       }
@@ -711,13 +704,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Subscription not found" }
+              message: {
+                type: "string",
+                example: "Subscription not found"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Subscription not found"
           }
         }
       }
@@ -730,13 +721,15 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Missing or invalid token" }
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Missing or invalid token"
           }
         }
       }
@@ -749,13 +742,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Forbidden" }
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Forbidden"
           }
         }
       }
@@ -768,13 +759,11 @@ router.post(
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error while updating subscription" }
+              message: {
+                type: "string",
+                example: "server error message"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error while updating subscription"
           }
         }
       }
@@ -797,25 +786,39 @@ router.get("/showSubscriptions/:userId",authorization.authorizeRole("ADMIN","MOD
     } */
 
    /* #swagger.responses[200] = {
-         description: 'User subscriptions retrieved successfully',
-         content: {
-           "application/json": {
-             schema: {
-               type: "object",
-               properties: {
-                 success: { type: "boolean", example: true },
-                 message: { type: "string", example: "User subscriptions retrieved successfully" },
-                 data: { type: "object" }
-               }
-             },
-             example: {
-               success: true,
-               message: "User subscriptions retrieved successfully",
-               data: { id: 1 }
-             }
-           }
-         }
-   } */
+      description: 'User subscriptions retrieved successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User subscriptions retrieved successfully"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    subscriptionId: { type: "integer", example: 1 },
+                    userId: { type: "integer", example: 3 },
+                    category: { type: "string", example: "CLOSURE" },
+                    latitude: { type: "number", example: 31.9522 },
+                    longitude: { type: "number", example: 35.2332 },
+                    radius_km: { type: "number", example: 5 },
+                    createdAt: {
+                      type: "string",
+                      example: "2026-04-25T10:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+} */
 
 /* #swagger.responses[500] = {
       description: 'Server error while retrieving subscription',
@@ -824,13 +827,11 @@ router.get("/showSubscriptions/:userId",authorization.authorizeRole("ADMIN","MOD
           schema: {
             type: "object",
             properties: {
-              success: { type: "boolean", example: false },
-              message: { type: "string", example: "Server error while retrieving subscription" }
+              message: {
+                type: "string",
+                example: "server error message"
+              }
             }
-          },
-          example: {
-            success: false,
-            message: "Server error while retrieving subscription"
           }
         }
       }

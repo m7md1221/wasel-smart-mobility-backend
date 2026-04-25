@@ -77,41 +77,30 @@ router.get("/", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Incidents retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Incidents retrieved successfully" },
-                data: { type: "object" }
-              }
-            },
-            example: {
-              success: true,
-              message: "Incidents retrieved successfully",
-              data: { id: 1 }
-            }
-          }
+        schema: {
+                total: 100,
+                page: 1,
+                limit: 10,
+                incidents: [
+                        {
+                                id: 1,            
+                                category: 'CLOSURE',
+                                description: 'Road closed due to construction',
+                                severity: 'HIGH',
+                                status: 'open',
+                                checkpoint_id: 1,
+                                created_at: '2024-01-01T12:00:00Z',
+                                updated_at: '2024-01-01T12:00:00Z'
+                        }
+                ]
         }
+
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while fetching incidents',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while fetching incidents" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while fetching incidents"
-            }
-          }
+        schema: {
+                message: "Server error"
         }
   } */
 
@@ -133,60 +122,32 @@ router.get("/:id", (req, res, next) => {
 
   /* #swagger.responses[200] = {
         description: 'Incident retrieved successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Incident retrieved successfully" },
-                data: { type: "object" }
-              }
-            },
-            example: {
-              success: true,
-              message: "Incident retrieved successfully",
-              data: { id: 1 }
-            }
-          }
-        }
+        schema: {
+                id: 1,            
+                category: 'CLOSURE',
+                description: 'Road closed due to construction',
+                severity: 'HIGH',
+                status: 'open',
+                checkpoint_id: 1,
+                checkpoint_name: 'Checkpoint A',
+                creator_name: 'John Doe',
+                verifier_name: 'Jane Smith',
+                created_at: '2024-01-01T12:00:00Z',
+                updated_at: '2024-01-01T12:00:00Z'
+        } 
   } */
 
   /* #swagger.responses[404] = {
         description: 'Incident not found',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Incident not found" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Incident not found"
-            }
-          }
+        schema: {
+                message: "Incident not found"
         }
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while fetching incident',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while fetching incident" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while fetching incident"
-            }
-          }
+        schema: {
+                message: "Server error"
         }
   } */
 
@@ -244,80 +205,35 @@ router.post("/", checkAuth, (req, res, next) => {
 
   /* #swagger.responses[201] = {
         description: 'Incident created successfully',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: true },
-                message: { type: "string", example: "Incident created successfully" },
-                data: { type: "object" }
-              }
-            },
-            example: {
-              success: true,
-              message: "Incident created successfully",
-              data: { id: 1 }
-            }
-          }
+        schema: {
+                id: 1,            
+                category: 'CLOSURE',
+                description: 'Road closed due to construction',
+                severity: 'HIGH',
+                status: 'open',
+                checkpoint_id: 1,
+                created_at: '2024-01-01T12:00:00Z',
+                updated_at: '2024-01-01T12:00:00Z'
         }
+
   } */
 
   /* #swagger.responses[400] = {
         description: 'Validation error',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Validation error" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Validation error"
-            }
-          }
+        schema: {
+                message: "Validation error: Missing required fields or invalid data types"
         }
   } */
 
   /* #swagger.responses[401] = {
         description: 'Unauthorized - missing or invalid token',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Unauthorized - missing or invalid token" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Unauthorized - missing or invalid token"
-            }
-          }
+        schema: {
+                message: "Unauthorized: missing or invalid token"
         }
   } */
 
   /* #swagger.responses[500] = {
         description: 'Server error while creating incident',
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                success: { type: "boolean", example: false },
-                message: { type: "string", example: "Server error while creating incident" }
-              }
-            },
-            example: {
-              success: false,
-              message: "Server error while creating incident"
-            }
-          }
-        }
   } */
 
   return ctrl.createIncident(req, res, next);
@@ -366,117 +282,50 @@ router.put(
 
     /* #swagger.responses[200] = {
           description: 'Incident status updated successfully',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: true },
-                  message: { type: "string", example: "Incident status updated successfully" },
-                  data: { type: "object" }
-                }
-              },
-              example: {
-                success: true,
-                message: "Incident status updated successfully",
-                data: { id: 1 }
-              }
-            }
+          schema: {
+                  id: 1,            
+                  category: 'CLOSURE',
+                  description: 'Road closed due to construction',
+                  severity: 'HIGH',
+                  status: 'verified',
+                  checkpoint_id: 1,
+                  created_at: '2024-01-01T12:00:00Z',
+                  updated_at: '2024-01-02T12:00:00Z'
           }
     } */
 
     /* #swagger.responses[400] = {
           description: 'Invalid status value. Status must be one of: open, verified, closed',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Invalid status value. Status must be one of: open, verified, closed" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Invalid status value. Status must be one of: open, verified, closed"
-              }
-            }
+          schema: {
+                  message: "Invalid status value. Status must be one of: open, verified, closed"
           }
     } */
 
     /* #swagger.responses[401] = {
           description: 'Unauthorized - missing or invalid token',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Unauthorized - missing or invalid token" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Unauthorized - missing or invalid token"
-              }
-            }
+          schema: {
+                  message: "Unauthorized: missing or invalid token"
           }
     } */
 
     /* #swagger.responses[403] = {
           description: 'Forbidden - only Admin or Moderator can update incident status',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Forbidden - only Admin or Moderator can update incident status" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Forbidden - only Admin or Moderator can update incident status"
-              }
-            }
+          schema: {
+                  message: "Forbidden: only Admin or Moderator can update incident status"
           }
     } */
 
     /* #swagger.responses[404] = {
           description: 'Incident not found',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Incident not found" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Incident not found"
-              }
-            }
+          schema: {
+                  message: "Incident not found"
           }
     } */
 
     /* #swagger.responses[500] = {
           description: 'Server error while updating incident status',
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: { type: "boolean", example: false },
-                  message: { type: "string", example: "Server error while updating incident status" }
-                }
-              },
-              example: {
-                success: false,
-                message: "Server error while updating incident status"
-              }
-            }
+          schema: {
+                  message: "Server error while updating incident status"
           }
     } */
 
