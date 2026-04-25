@@ -386,14 +386,6 @@ Then check logs:
 docker compose logs -f app
 ```
 
-## 🖼️ Screenshots and Demo
-
-- API docs screenshot placeholder: `docs/images/swagger-ui.png`
-- Postman collection run screenshot placeholder: `docs/images/postman-run.png`
-- Demo video placeholder: `https://your-demo-link-here`
-
-If you add screenshots, keep dimensions and naming consistent for a clean repository presentation.
-
 
 ## 🛡️ Security Notes
 
