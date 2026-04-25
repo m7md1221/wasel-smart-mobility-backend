@@ -43,16 +43,67 @@ router.post("/signup", validate(createUserSchema), (req, res, next) => {
 } */
 
   /* #swagger.responses[201] = {
-        description: 'User created successfully'
-  } */
+      description: 'User created successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User created successfully"
+              },
+              user: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  name: { type: "string", example: "John Doe" },
+                  email: { type: "string", example: "example@email.com" },
+                  role: { type: "string", example: "CITIZEN" },
+                  confidence_score: { type: "integer", example: 50 },
+                  is_active: { type: "boolean", example: true },
+                  is_authorized: { type: "boolean", example: false }
+                }
+              }
+            }
+          }
+        }
+      }
+} */
 
-  /* #swagger.responses[400] = {
-        description: 'User already exists'
-  } */
+/* #swagger.responses[400] = {
+      description: 'User already exists',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User with this email already exists"
+              }
+            }
+          }
+        }
+      }
+} */
 
-  /* #swagger.responses[500] = {
-        description: 'Server error'
-  } */
+/* #swagger.responses[500] = {
+      description: 'Server error',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error creating user"
+              }
+            }
+          }
+        }
+      }
+} */
 
   return usersController.signup(req, res, next);
 });
@@ -98,18 +149,56 @@ router.post("/login", (req, res, next) => {
         }
   } */
 
-  /* #swagger.responses[401] = {
-        description: 'Invalid parameters'
-  } */
+/* #swagger.responses[401] = {
+      description: 'Invalid credentials',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid email or password"
+              }
+            }
+          }
+        }
+      }
+} */
 
-  /* #swagger.responses[403] = {
-        description: 'Account is inactive'
-  } */
+/* #swagger.responses[403] = {
+      description: 'Account is inactive',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Account is inactive"
+              }
+            }
+          }
+        }
+      }
+} */
 
-  /* #swagger.responses[500] = {
-        description: 'Server error'
-  } */
-
+/* #swagger.responses[500] = {
+      description: 'Server error',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error during authentication"
+              }
+            }
+          }
+        }
+      }
+} */
   return usersController.login(req, res, next);
 });
 
@@ -121,17 +210,68 @@ router.get("/myprofile", authentication.checkAuth, (req, res, next) => {
   // #swagger.description = 'Returns the profile of the authenticated user'
   // #swagger.security = [{ BearerAuth: [] }]
 
-  /* #swagger.responses[200] = {
-        description: 'Profile found successfully',
-  } */
+/* #swagger.responses[200] = {
+      description: 'Profile found successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "profile found succesfully"
+              },
+              user: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  name: { type: "string", example: "John Doe" },
+                  email: { type: "string", example: "john@example.com" },
+                  role: { type: "string", example: "CITIZEN" },
+                  confidence_score: { type: "integer", example: 50 },
+                  is_active: { type: "boolean", example: true },
+                  is_authorized: { type: "boolean", example: false }
+                }
+              }
+            }
+          }
+        }
+      }
+} */
 
-  /* #swagger.responses[404] = {
-        description: 'user not found'
-}*/        
-        /* #swagger.responses[500] = {
-        description: 'Server error'
-    } */
+/* #swagger.responses[404] = {
+      description: 'User not found',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User not found"
+              }
+            }
+          }
+        }
+      }
+} */
 
+/* #swagger.responses[500] = {
+      description: 'Server error',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error fetching profile"
+              }
+            }
+          }
+        }
+      }
+} */
   return usersController.myProfile(req, res, next);
 });
 
@@ -176,13 +316,51 @@ router.put(
       }
 } */
 
-    /* #swagger.responses[200] = {
-          description: 'User updated successfully'
-    } */
+   /* #swagger.responses[200] = {
+      description: 'User updated successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User updated successfully"
+              },
+              user: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  name: { type: "string", example: "Updated Name" },
+                  email: { type: "string", example: "updated@email.com" },
+                  role: { type: "string", example: "CITIZEN" },
+                  confidence_score: { type: "integer", example: 50 },
+                  is_active: { type: "boolean", example: true },
+                  is_authorized: { type: "boolean", example: false }
+                }
+              }
+            }
+          }
+        }
+      }
+} */
 
-    /* #swagger.responses[404] = {
-          description: 'User not found'
-    } */
+/* #swagger.responses[404] = {
+      description: 'User not found',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User not found"
+              }
+            }
+          }
+        }
+      }
+} */
 
     return usersController.updateUser(req, res, next);
   }
@@ -242,16 +420,56 @@ router.post(
         }
       }
 } */
+/* #swagger.responses[201] = {
+      description: 'User created successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User created successfully"
+              }
+            }
+          }
+        }
+      }
+} */
 
-    /* #swagger.responses[201] = {
-          description: 'User created successfully'
-    } */
-    /* #swagger.responses[400] = {
-          description: 'User with this email already exists'
-    } */
-   /* #swagger.responses[500] = {
-          description: 'Error creating user'
-    } */
+/* #swagger.responses[400] = {
+      description: 'User with this email already exists',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User with this email already exists"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Error creating user',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error creating user"
+              }
+            }
+          }
+        }
+      }
+} */
 
 
     return usersController.addUser(req, res, next);
@@ -274,18 +492,73 @@ router.delete(
           type: 'integer'
     } */
 
-    /* #swagger.responses[200] = {
-          description: 'User deleted successfully'
-    } */
-    /* #swagger.responses[400] = {
-          description: 'Invalid user ID'
-    } */
-   /* #swagger.responses[404] = {
-          description: 'User not found'
-    } */
-   /* #swagger.responses[500] = {
-          description: 'Error deleteing user'
-    } */
+/* #swagger.responses[200] = {
+      description: 'User deleted successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User deleted successfully"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[400] = {
+      description: 'Invalid user ID',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid user ID"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[404] = {
+      description: 'User not found',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User not found"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Error deleting user',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error deleting user"
+              }
+            }
+          }
+        }
+      }
+} */
     return usersController.deleteUser(req, res, next);
   }
 );
@@ -305,21 +578,73 @@ router.post(
           required: true,
           type: 'integer'
     } */
-   /* #swagger.responses[400] = {
-          description: 'Invalid user ID'
-    } */
-   /* #swagger.responses[404] = {
-          description: 'User not found'
-    } */
-   /* #swagger.responses[400] = {
-          description: 'User is already deactivated'
-    } */
-   /* #swagger.responses[500] = {
-          description: 'Error deactivating user'
-    } */
-   /* #swagger.responses[200] = {
-          description: 'User deactivated successfully'
-    } */
+/* #swagger.responses[400] = {
+      description: 'Invalid user ID or user is already deactivated',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid user ID"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[404] = {
+      description: 'User not found',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User not found"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Error deactivating user',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error deactivating user"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[200] = {
+      description: 'User deactivated successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User deactivated successfully"
+              }
+            }
+          }
+        }
+      }
+} */
    return usersController.deactivateUser(req, res, next);
   }
 );
@@ -339,21 +664,73 @@ router.post(
           required: true,
           type: 'integer'
     } */
-      /* #swagger.responses[400] = {
-          description: 'Invalid user ID'
-    } */
-   /* #swagger.responses[404] = {
-          description: 'User not found'
-    } */
    /* #swagger.responses[400] = {
-          description: 'User is already activated'
-    } */
-   /* #swagger.responses[500] = {
-          description: 'Error activating user'
-    } */
-   /* #swagger.responses[200] = {
-          description: 'User activated successfully'
-    } */
+      description: 'Invalid user ID or user is already active',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid user ID"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[404] = {
+      description: 'User not found',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User not found"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Error activating user',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error activating user"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[200] = {
+      description: 'User activated successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User activated successfully"
+              }
+            }
+          }
+        }
+      }
+} */
     return usersController.activateUser(req, res, next);
   }
 );
@@ -366,7 +743,7 @@ router.get(
   (req, res, next) => {
     // #swagger.tags = ['Users']
     // #swagger.summary = 'Get user by ID'
-    //swagger.description = ' Admin and moderator retrieve user's info by ID'
+    // #swagger.description = 'Admin and moderator retrieve user's info by ID'
     // #swagger.security = [{ BearerAuth: [] }]
 
     /* #swagger.parameters['id'] = {
@@ -374,6 +751,39 @@ router.get(
           required: true,
           type: 'integer'
     } */
+    /* #swagger.responses[200] = {
+          description: 'User found successfully',
+          content: {
+            "application/json": {
+              schema: { 
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  name: { type: "string", example: "John Doe" },
+                  email: { type: "string", example: "john@example.com" },
+                  role: { type: "string", example: "CITIZEN" },
+                  confidence_score: { type: "integer", example: 50 },   
+                  is_active: { type: "boolean", example: true },
+                  is_authorized: { type: "boolean", example: false }
+                } 
+              }
+            }
+          }
+    } */
+
+    /* #swagger.responses[404] = {
+          description: 'User not found',
+          content: {
+            "application/json": {
+              schema: { 
+                type: "object",
+                properties: {
+                  message: { type: "string", example: "User not found" },
+                }
+              }
+            }
+          }
+    } */  
 
     return usersController.showUserInfo(req, res, next);
   }
@@ -388,18 +798,65 @@ router.get(
   (req, res, next) => {
     // #swagger.tags = ['Users']
     // #swagger.summary = 'Get all users'
-    //swagger.description = ' Admin and moderator retrieve all users' info'
+    // #swagger.description = 'Admin and moderator retrieve all users' info'
     // #swagger.security = [{ BearerAuth: [] }]
 
-    /* #swagger.responses[200] = {
-          description: 'List of users'
-    } */
-    /* #swagger.responses[404] = {
-          description: 'users not found'
-    } */
-    /* #swagger.responses[500] = {
-          description: 'Error fetching users'
-    } */
+  /* #swagger.responses[200] = {
+      description: 'List of users',
+      content: {
+        "application/json": {
+          schema: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "integer", example: 1 },
+                name: { type: "string", example: "John Doe" },
+                email: { type: "string", example: "john@example.com" },
+                role: { type: "string", example: "CITIZEN" },
+                confidence_score: { type: "integer", example: 50 },
+                is_active: { type: "boolean", example: true },
+                is_authorized: { type: "boolean", example: false }
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[404] = {
+      description: 'Users not found',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "No users found"
+              }
+            }
+          }
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Error fetching users',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error fetching users"
+              }
+            }
+          }
+        }
+      }
+} */
 
     return usersController.showAllUsers(req, res, next);
   }

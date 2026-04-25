@@ -39,47 +39,109 @@ router.post(
       }
 } */
 
-    /* #swagger.responses[201] = {
-          description: 'Subscription created successfully',
+/* #swagger.responses[201] = {
+      description: 'Subscription created successfully',
+      content: {
+        "application/json": {
           schema: {
-            message: "Subscription created successfully",
-            data: {
-              subscriptionId: 1,
-              userId: 3,
-              category: "CLOSURE",
-              latitude: 31.9522,
-              longitude: 35.2332,
-              radius_km: 5,
-              createdAt: "2026-04-25T10:00:00.000Z"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Subscription created successfully"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  subscriptionId: { type: "integer", example: 1 },
+                  userId: { type: "integer", example: 3 },
+                  category: { type: "string", example: "CLOSURE" },
+                  latitude: { type: "number", example: 31.9522 },
+                  longitude: { type: "number", example: 35.2332 },
+                  radius_km: { type: "number", example: 5 },
+                  createdAt: {
+                    type: "string",
+                    example: "2026-04-25T10:00:00.000Z"
+                  }
+                }
+              }
             }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[400] = {
-          description: 'Invalid subscription data or subscription already exists',
+/* #swagger.responses[400] = {
+      description: 'Invalid subscription data or subscription already exists',
+      content: {
+        "application/json": {
           schema: {
-            message: "Subscription already exists for this user"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Subscription already exists for this user"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[401] = {
-          description: 'missing or invalid token',
-            schema: {
-         message: "Invalid authorization header format",
-         error: "Expected format: Bearer <token>"
+        }
+      }
+} */
+
+/* #swagger.responses[401] = {
+      description: 'Missing or invalid token',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[403] = {
-          description: 'Forbidden - only citizens can create subscriptions',
-            schema: {
-         message: "Forbidden: You do not have the required permissions"
+        }
+      }
+} */
+
+/* #swagger.responses[403] = {
+      description: 'Forbidden - only citizens can create subscriptions',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[500] = {
-          description: 'Server error while creating subscription',
-            schema: {
-            message:"Error creating subscription for this user"
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Server error while creating subscription',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Error creating subscription for this user"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
     return subController.createSubscription(req, res, next);
   }
@@ -100,39 +162,98 @@ router.post(
           description: 'User ID whose subscriptions will be deleted'
     } */
 
-    /* #swagger.responses[200] = {
-          description: 'All subscriptions deleted successfully',
+/* #swagger.responses[200] = {
+      description: 'All subscriptions deleted successfully',
+      content: {
+        "application/json": {
           schema: {
-            message: "All subscriptions deleted successfully",
-            deletedCount: 3
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "All subscriptions deleted successfully"
+              },
+              deletedCount: {
+                type: "integer",
+                example: 3
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[404] = {
-          description: 'No subscriptions found for this user',
+/* #swagger.responses[404] = {
+      description: 'No subscriptions found for this user',
+      content: {
+        "application/json": {
           schema: {
-            message: "No subscriptions found for this user"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "No subscriptions found for this user"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[401] = {
-          description: 'missing or invalid token',
-            schema: {
-         message: "Invalid authorization header format",
-         error: "Expected format: Bearer <token>"
+        }
+      }
+} */
+
+/* #swagger.responses[401] = {
+      description: 'Missing or invalid token',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[403] = {
-          description: 'Forbidden - only citizens can delete subscriptions',
-            schema: {
-         message: "Forbidden: You do not have the required permissions"
+        }
+      }
+} */
+
+/* #swagger.responses[403] = {
+      description: 'Forbidden - only citizens can delete subscriptions',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[500] = {
-          description: 'Server error while deleting subscription',
-            schema: {
-            message:"server error message"
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Server error while deleting subscription',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "server error message"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
     return subController.deleteSubscription(req, res, next);
   });
 
@@ -158,37 +279,94 @@ router.post(
         }
       }
 } */
-    /* #swagger.responses[200] = {
-          description: 'Category subscription deleted successfully',
+   /* #swagger.responses[200] = {
+      description: 'Category subscription deleted successfully',
+      content: {
+        "application/json": {
           schema: {
-            message: "subscription deleted successfully"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "subscription deleted successfully"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[404] = {
-          description: 'Subscription not found',
+        }
+      }
+} */
+
+/* #swagger.responses[404] = {
+      description: 'Subscription not found',
+      content: {
+        "application/json": {
           schema: {
-            message: "Subscription not found"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Subscription not found"
+              }
+            }
           }
-    } */
-   /* #swagger.responses[401] = {
-          description: 'missing or invalid token',
-            schema: {
-         message: "Invalid authorization header format",
-         error: "Expected format: Bearer <token>"
+        }
+      }
+} */
+
+/* #swagger.responses[401] = {
+      description: 'Missing or invalid token',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[403] = {
-          description: 'Forbidden',
-            schema: {
-         message: "Forbidden: You do not have the required permissions"
+        }
+      }
+} */
+
+/* #swagger.responses[403] = {
+      description: 'Forbidden',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[500] = {
-          description: 'Server error while deleting subscription',
-            schema: {
-            message:"server error message"
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Server error while deleting subscription',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "server error message"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
     return subController.deleteCategorySubscription(req, res, next);
   });
 
@@ -217,38 +395,94 @@ router.post(
           }
     } */
 
-    /* #swagger.responses[200] = {
-          description: 'Location subscription deleted successfully',
+   /* #swagger.responses[200] = {
+      description: 'Location subscription deleted successfully',
+      content: {
+        "application/json": {
           schema: {
-            message: "subscription deleted successfully"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "subscription deleted successfully"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[404] = {
-          description: 'Subscription not found',
+/* #swagger.responses[404] = {
+      description: 'Subscription not found',
+      content: {
+        "application/json": {
           schema: {
-            message: "Subscription not found"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Subscription not found"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[401] = {
-          description: 'missing or invalid token',
-            schema: {
-         message: "Invalid authorization header format",
-         error: "Expected format: Bearer <token>"
+        }
+      }
+} */
+
+/* #swagger.responses[401] = {
+      description: 'Missing or invalid token',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[403] = {
-          description: 'Forbidden',
-            schema: {
-         message: "Forbidden: You do not have the required permissions"
+        }
+      }
+} */
+
+/* #swagger.responses[403] = {
+      description: 'Forbidden',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[500] = {
-          description: 'Server error while deleting subscription',
-            schema: {
-            message: "server error message"
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Server error while deleting subscription',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "server error message"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
     return subController.deleteLocationSubscription(req, res, next);
   });
 
@@ -274,54 +508,122 @@ router.post(
         }
       }
 } */
-
-    /* #swagger.responses[200] = {
-          description: 'Category subscription updated successfully',
+/* #swagger.responses[200] = {
+      description: 'Category subscription updated successfully',
+      content: {
+        "application/json": {
           schema: {
-            message: "Category subscription updated",
-            subscription: {
-              id: 1,
-              user_id: 3,
-              category: "DELAY",
-              latitude: 31.9522,
-              longitude: 35.2332,
-              radius_km: 5
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Category subscription updated"
+              },
+              subscription: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  user_id: { type: "integer", example: 3 },
+                  category: { type: "string", example: "DELAY" },
+                  latitude: { type: "number", example: 31.9522 },
+                  longitude: { type: "number", example: 35.2332 },
+                  radius_km: { type: "number", example: 5 }
+                }
+              }
             }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[400] = {
-          description: 'Invalid update request',
+/* #swagger.responses[400] = {
+      description: 'Invalid update request',
+      content: {
+        "application/json": {
           schema: {
-            message: "User is already subscribed to this category"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User is already subscribed to this category"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[404] = {
-          description: 'Subscription not found',
+/* #swagger.responses[404] = {
+      description: 'Subscription not found',
+      content: {
+        "application/json": {
           schema: {
-            message: "Subscription not found"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Subscription not found"
+              }
+            }
           }
-    } */
-   /* #swagger.responses[401] = {
-          description: 'missing or invalid token',
-            schema: {
-         message: "Invalid authorization header format",
-         error: "Expected format: Bearer <token>"
+        }
+      }
+} */
+
+/* #swagger.responses[401] = {
+      description: 'Missing or invalid token',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[403] = {
-          description: 'Forbidden',
-            schema: {
-         message: "Forbidden: You do not have the required permissions"
+        }
+      }
+} */
+
+/* #swagger.responses[403] = {
+      description: 'Forbidden',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[500] = {
-          description: 'Server error while updating subscription',
-            schema: {
-            message:"server error message"
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Server error while updating subscription',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "server error message"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
      return
   subController.updateCategorySubscription(req,res,next)});
 
@@ -350,53 +652,122 @@ router.post(
           }
     } */
 
-    /* #swagger.responses[200] = {
-          description: 'Location subscription updated successfully',
+/* #swagger.responses[200] = {
+      description: 'Location subscription updated successfully',
+      content: {
+        "application/json": {
           schema: {
-            message: "Location subscription updated",
-            subscription: {
-              id: 1,
-              user_id: 3,
-              category: "CLOSURE",
-              latitude: 31.9522,
-              longitude: 35.2332,
-              radius_km: 10
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Location subscription updated"
+              },
+              subscription: {
+                type: "object",
+                properties: {
+                  id: { type: "integer", example: 1 },
+                  user_id: { type: "integer", example: 3 },
+                  category: { type: "string", example: "CLOSURE" },
+                  latitude: { type: "number", example: 31.9522 },
+                  longitude: { type: "number", example: 35.2332 },
+                  radius_km: { type: "number", example: 10 }
+                }
+              }
             }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[400] = {
-          description: 'Invalid update request',
+/* #swagger.responses[400] = {
+      description: 'Invalid update request',
+      content: {
+        "application/json": {
           schema: {
-            message: "User is already subscribed to this location"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User is already subscribed to this location"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[404] = {
-          description: 'Subscription not found',
+/* #swagger.responses[404] = {
+      description: 'Subscription not found',
+      content: {
+        "application/json": {
           schema: {
-            message: "Subscription not found"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Subscription not found"
+              }
+            }
           }
-    } */
- /* #swagger.responses[401] = {
-          description: 'missing or invalid token',
-            schema: {
-         message: "Invalid authorization header format",
-         error: "Expected format: Bearer <token>"
+        }
+      }
+} */
+
+/* #swagger.responses[401] = {
+      description: 'Missing or invalid token',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Invalid authorization header format"
+              },
+              error: {
+                type: "string",
+                example: "Expected format: Bearer <token>"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[403] = {
-          description: 'Forbidden',
-            schema: {
-         message: "Forbidden: You do not have the required permissions"
+        }
+      }
+} */
+
+/* #swagger.responses[403] = {
+      description: 'Forbidden',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Forbidden: You do not have the required permissions"
+              }
+            }
           }
-    } */
-    /* #swagger.responses[500] = {
-          description: 'Server error while updating subscription',
-            schema: {
-            message:"server error message"
+        }
+      }
+} */
+
+/* #swagger.responses[500] = {
+      description: 'Server error while updating subscription',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "server error message"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
     return subController.updateLocationSubscription(req, res, next);
   });
   
@@ -414,29 +785,57 @@ router.get("/showSubscriptions/:userId",authorization.authorizeRole("ADMIN","MOD
           description: 'User ID whose subscriptions will be retrieved'
     } */
 
-    /* #swagger.responses[200] = {
-          description: 'User subscriptions retrieved successfully',
+   /* #swagger.responses[200] = {
+      description: 'User subscriptions retrieved successfully',
+      content: {
+        "application/json": {
           schema: {
-            message: "User subscriptions retrieved successfully",
-            data: [
-              {
-                subscriptionId: 1,
-                userId: 3,
-                category: "CLOSURE",
-                latitude: 31.9522,
-                longitude: 35.2332,
-                radius_km: 5,
-                createdAt: "2026-04-25T10:00:00.000Z"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "User subscriptions retrieved successfully"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    subscriptionId: { type: "integer", example: 1 },
+                    userId: { type: "integer", example: 3 },
+                    category: { type: "string", example: "CLOSURE" },
+                    latitude: { type: "number", example: 31.9522 },
+                    longitude: { type: "number", example: 35.2332 },
+                    radius_km: { type: "number", example: 5 },
+                    createdAt: {
+                      type: "string",
+                      example: "2026-04-25T10:00:00.000Z"
+                    }
+                  }
+                }
               }
-            ]
+            }
           }
-    } */
+        }
+      }
+} */
+
 /* #swagger.responses[500] = {
-          description: 'Server error while retrieving subscription',
-            schema: {
-            message:"server error message"
+      description: 'Server error while retrieving subscription',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "server error message"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
     return
  subController.getUserSubscriptions(req,res,next)});
 

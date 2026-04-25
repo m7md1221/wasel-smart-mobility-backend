@@ -12,45 +12,88 @@ router.get("/",authorization.authorizeRole("ADMIN","MODERATOR"),(req,res,next)=>
     // #swagger.summary = 'Get all alerts'
     // #swagger.description = 'Retrieves all created alerts. Only Admin and Moderator can access this endpoint.'
     // #swagger.security = [{ BearerAuth: [] }]
-
-    /* #swagger.responses[200] = {
-          description: 'Alerts retrieved successfully',
+/* #swagger.responses[200] = {
+      description: 'Alerts retrieved successfully',
+      content: {
+        "application/json": {
           schema: {
-            message: "alerts retrieved successfully",
-            data: [
-              {
-                alertId: 1,
-                incident_id: 5,
-                category: "CLOSURE",
-                message: "Incident has been verified",
-                latitude: 31.9522,
-                longitude: 35.2332,
-                createdAt: "2026-04-25T10:00:00.000Z"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "alerts retrieved successfully"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    alertId: { type: "integer", example: 1 },
+                    incident_id: { type: "integer", example: 5 },
+                    category: { type: "string", example: "CLOSURE" },
+                    message: { type: "string", example: "Incident has been verified" },
+                    latitude: { type: "number", example: 31.9522 },
+                    longitude: { type: "number", example: 35.2332 },
+                    createdAt: { type: "string", example: "2026-04-25T10:00:00.000Z" }
+                  }
+                }
               }
-            ]
+            }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[401] = {
-          description: 'Unauthorized - missing or invalid token',
+/* #swagger.responses[401] = {
+      description: 'Unauthorized - missing or invalid token',
+      content: {
+        "application/json": {
           schema: {
-            message: "Unauthorized - missing or invalid token"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Unauthorized - missing or invalid token"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[403] = {
-          description: 'Forbidden - only Admin or Moderator can access alerts',
+/* #swagger.responses[403] = {
+      description: 'Forbidden - only Admin or Moderator can access alerts',
+      content: {
+        "application/json": {
           schema: {
-            message: "Forbidden - only Admin or Moderator can access alerts"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Forbidden - only Admin or Moderator can access alerts"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
-    /* #swagger.responses[500] = {
-          description: 'Server error while retrieving alerts',
+/* #swagger.responses[500] = {
+      description: 'Server error while retrieving alerts',
+      content: {
+        "application/json": {
           schema: {
-            message: "Server error while retrieving alerts"
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+                example: "Server error while retrieving alerts"
+              }
+            }
           }
-    } */
+        }
+      }
+} */
 
      return alertsController.getAlerts(req,res,next);
 });
