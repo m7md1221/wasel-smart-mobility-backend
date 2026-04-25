@@ -9731,8 +9731,8 @@
         "tags": [
           "Alerts"
         ],
-        "summary": "Get all alerts (Admin and Moderator only)",
-        "description": "",
+        "summary": "Get all alerts",
+        "description": "Retrieves all created alerts. Only Admin and Moderator can access this endpoint.",
         "parameters": [
           {
             "name": "authorization",
@@ -9744,16 +9744,208 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Alerts retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "alerts retrieved successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "alertId": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "incident_id": {
+                            "type": "number",
+                            "example": 5
+                          },
+                          "category": {
+                            "type": "string",
+                            "example": "CLOSURE"
+                          },
+                          "message": {
+                            "type": "string",
+                            "example": "Incident has been verified"
+                          },
+                          "latitude": {
+                            "type": "number",
+                            "example": 31.9522
+                          },
+                          "longitude": {
+                            "type": "number",
+                            "example": 35.2332
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2026-04-25T10:00:00.000Z"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "alerts retrieved successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "alertId": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "incident_id": {
+                            "type": "number",
+                            "example": 5
+                          },
+                          "category": {
+                            "type": "string",
+                            "example": "CLOSURE"
+                          },
+                          "message": {
+                            "type": "string",
+                            "example": "Incident has been verified"
+                          },
+                          "latitude": {
+                            "type": "number",
+                            "example": 31.9522
+                          },
+                          "longitude": {
+                            "type": "number",
+                            "example": 35.2332
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2026-04-25T10:00:00.000Z"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized - missing or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized - missing or invalid token"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized - missing or invalid token"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden - only Admin or Moderator can access alerts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden - only Admin or Moderator can access alerts"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Forbidden - only Admin or Moderator can access alerts"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Server error while retrieving alerts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error while retrieving alerts"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server error while retrieving alerts"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
