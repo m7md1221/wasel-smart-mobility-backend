@@ -8,7 +8,24 @@ router.post("/webhook",(req,res) =>
  // #swagger.summary = 'Receive incoming Telegram webhook updates'
   // #swagger.description = 'Receives webhook updates sent by Telegram. If the update contains a message, it is processed by the bot message handler.'
 /* #swagger.responses[200] = {
-      description: 'Telegram update received and processed successfully'
+      description: 'Telegram update received and processed successfully',
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: true },
+              message: { type: "string", example: "Telegram update received and processed successfully" },
+              data: { type: "object" }
+            }
+          },
+          example: {
+            success: true,
+            message: "Telegram update received and processed successfully",
+            data: { id: 1 }
+          }
+        }
+      }
 } */
 
 /* #swagger.responses[500] = {
@@ -18,11 +35,13 @@ router.post("/webhook",(req,res) =>
           schema: {
             type: "object",
             properties: {
-              message: {
-                type: "string",
-                example: "Error handling Telegram webhook"
-              }
+              success: { type: "boolean", example: false },
+              message: { type: "string", example: "Server error while handling Telegram webhook" }
             }
+          },
+          example: {
+            success: false,
+            message: "Server error while handling Telegram webhook"
           }
         }
       }

@@ -19,26 +19,15 @@ router.get("/",authorization.authorizeRole("ADMIN","MODERATOR"),(req,res,next)=>
           schema: {
             type: "object",
             properties: {
-              message: {
-                type: "string",
-                example: "alerts retrieved successfully"
-              },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    alertId: { type: "integer", example: 1 },
-                    incident_id: { type: "integer", example: 5 },
-                    category: { type: "string", example: "CLOSURE" },
-                    message: { type: "string", example: "Incident has been verified" },
-                    latitude: { type: "number", example: 31.9522 },
-                    longitude: { type: "number", example: 35.2332 },
-                    createdAt: { type: "string", example: "2026-04-25T10:00:00.000Z" }
-                  }
-                }
-              }
+              success: { type: "boolean", example: true },
+              message: { type: "string", example: "Alerts retrieved successfully" },
+              data: { type: "object" }
             }
+          },
+          example: {
+            success: true,
+            message: "Alerts retrieved successfully",
+            data: { id: 1 }
           }
         }
       }
@@ -51,11 +40,13 @@ router.get("/",authorization.authorizeRole("ADMIN","MODERATOR"),(req,res,next)=>
           schema: {
             type: "object",
             properties: {
-              message: {
-                type: "string",
-                example: "Unauthorized - missing or invalid token"
-              }
+              success: { type: "boolean", example: false },
+              message: { type: "string", example: "Unauthorized - missing or invalid token" }
             }
+          },
+          example: {
+            success: false,
+            message: "Unauthorized - missing or invalid token"
           }
         }
       }
@@ -68,11 +59,13 @@ router.get("/",authorization.authorizeRole("ADMIN","MODERATOR"),(req,res,next)=>
           schema: {
             type: "object",
             properties: {
-              message: {
-                type: "string",
-                example: "Forbidden - only Admin or Moderator can access alerts"
-              }
+              success: { type: "boolean", example: false },
+              message: { type: "string", example: "Forbidden - only Admin or Moderator can access alerts" }
             }
+          },
+          example: {
+            success: false,
+            message: "Forbidden - only Admin or Moderator can access alerts"
           }
         }
       }
@@ -85,11 +78,13 @@ router.get("/",authorization.authorizeRole("ADMIN","MODERATOR"),(req,res,next)=>
           schema: {
             type: "object",
             properties: {
-              message: {
-                type: "string",
-                example: "Server error while retrieving alerts"
-              }
+              success: { type: "boolean", example: false },
+              message: { type: "string", example: "Server error while retrieving alerts" }
             }
+          },
+          example: {
+            success: false,
+            message: "Server error while retrieving alerts"
           }
         }
       }
