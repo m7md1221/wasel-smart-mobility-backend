@@ -31,7 +31,7 @@ exports.createSubscription = async (req, res) => {
     if (err.message === "Subscription already exists for this user" ||err.message === "Invalid subscription, provide category and geographic details")  {
       return res.status(400).json({ message: err.message });
     }
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Error creating subscription for this user" });
   }
 };
 

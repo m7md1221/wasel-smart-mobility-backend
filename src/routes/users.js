@@ -5,27 +5,138 @@ const { createUserSchema, updateUserSchema } = require("../validators/userValida
 const authentication = require("../middlewares/auth"); 
 const authorization = require("../middlewares/rolesAuthorize");
 const router = express.Router();
-//public routes(no authentication or autherization)
+//punlic routes
+// signup
 router.post("/signup", validate(createUserSchema), (req, res, next) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Register a new user'
+  // #swagger.description = 'Creates a new user account with name, email, password, and role.'
+
+  /* #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["name", "email", "password"],
+            properties: {
+              name: {
+                type: "string",
+                example: "John Doe"
+              },
+              email: {
+                type: "string",
+                example: "john@example.com"
+              },
+              password: {
+                type: "string",
+                example: "password123"
+              },
+              role: {
+                type: "string",
+                example: "CITIZEN"
+              }
+            }
+          }
+        }
+      }
+} */
+
+  /* #swagger.responses[201] = {
+        description: 'User created successfully'
+  } */
+
+  /* #swagger.responses[400] = {
+        description: 'User already exists'
+  } */
+
+  /* #swagger.responses[500] = {
+        description: 'Server error'
+  } */
+
   return usersController.signup(req, res, next);
 });
+// login
 router.post("/login", (req, res, next) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Login a user'
+  // #swagger.description = 'logins user in the system by entering email and password, and returns JWT token'
+
+ /* #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["email", "password"],
+            properties: {
+              email: {
+                type: "string",
+                example: "john@example.com"
+              },
+              password: {
+                type: "string",
+                example: "password123"
+              }
+            }
+          }
+        }
+      }
+} */
+
+  /* #swagger.responses[200] = {
+        description: 'Authentication successful',
+        schema: {
+          message: "Authentication successful",
+          token: "JWT_TOKEN",
+          user: {
+            id: 1,
+            name: "John Doe",
+            email: "john@example.com",
+            role: "CITIZEN"
+          }
+        }
+  } */
+
+  /* #swagger.responses[401] = {
+        description: 'Invalid parameters'
+  } */
+
+  /* #swagger.responses[403] = {
+        description: 'Account is inactive'
+  } */
+
+  /* #swagger.responses[500] = {
+        description: 'Server error'
+  } */
+
   return usersController.login(req, res, next);
 });
 
-// authenticated users
+//authenticated routes
+//get my profile
 router.get("/myprofile", authentication.checkAuth, (req, res, next) => {
   // #swagger.tags = ['Users']
-  // #swagger.summary = 'The authenticated user can view their profile'
+  // #swagger.summary = 'Get my profile'
+  // #swagger.description = 'Returns the profile of the authenticated user'
   // #swagger.security = [{ BearerAuth: [] }]
+
+  /* #swagger.responses[200] = {
+        description: 'Profile found successfully',
+  } */
+
+  /* #swagger.responses[404] = {
+        description: 'user not found'
+}*/        
+        /* #swagger.responses[500] = {
+        description: 'Server error'
+    } */
+
   return usersController.myProfile(req, res, next);
 });
 
-// protected routes (authentication and authorization) 
+//protected routes
+//update user
 router.put(
   "/:id",
   authentication.checkAuth,
@@ -33,14 +144,52 @@ router.put(
   validate(updateUserSchema),
   (req, res, next) => {
     // #swagger.tags = ['Users']
-    // #swagger.summary = 'Update user information (Admin can update any user, Citizen can update their own information)'
+    // #swagger.summary = 'Update user'
+    // #swagger.description = 'Admin can update any user, Citizen can update their own data'
     // #swagger.security = [{ BearerAuth: [] }]
+
+    /* #swagger.parameters['id'] = {
+          in: 'path',
+          required: true,
+          type: 'integer',
+          description: 'User ID'
+    } */
+
+ /* #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+                example: "Updated Name"
+              },
+              email: {
+                type: "string",
+                example: "updated@email.com"
+              }
+            }
+          }
+        }
+      }
+} */
+
+    /* #swagger.responses[200] = {
+          description: 'User updated successfully'
+    } */
+
+    /* #swagger.responses[404] = {
+          description: 'User not found'
+    } */
+
     return usersController.updateUser(req, res, next);
   }
 );
-// admin only routes
 
-//user creation 
+//admin only
+//create user
 router.post(
   "/",
   authentication.checkAuth,
@@ -48,73 +197,210 @@ router.post(
   validate(createUserSchema),
   (req, res, next) => {
     // #swagger.tags = ['Users']
-    // #swagger.summary = 'Admin creates a new user'
+    // #swagger.summary = 'Admin creates a user'
+    // #swagger.description = 'Admin creates new user by entering user's name,email,password,role,confidence score,activation status and authorization status'
     // #swagger.security = [{ BearerAuth: [] }]
+
+/* #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["name", "email", "password"],
+            properties: {
+              name: {
+                type: "string",
+                example: "Admin Created User"
+              },
+              email: {
+                type: "string",
+                example: "user@email.com"
+              },
+              password: {
+                type: "string",
+                example: "password123"
+              },
+              role: {
+                type: "string",
+                example: "CITIZEN"
+              },
+              confidence_score: {
+                type: "integer",
+                example: 50
+              },
+              is_active: {
+                type: "boolean",
+                example: true
+              },
+              is_authorized: {
+                type: "boolean",
+                example: false
+              }
+            }
+          }
+        }
+      }
+} */
+
+    /* #swagger.responses[201] = {
+          description: 'User created successfully'
+    } */
+    /* #swagger.responses[400] = {
+          description: 'User with this email already exists'
+    } */
+   /* #swagger.responses[500] = {
+          description: 'Error creating user'
+    } */
+
+
     return usersController.addUser(req, res, next);
   }
 );
-
-//user deletion 
+//delete user
 router.delete(
   "/:id",
   authentication.checkAuth,
   authorization.authorizeRole("ADMIN"),
   (req, res, next) => {
     // #swagger.tags = ['Users']
-    // #swagger.summary = 'Admin deletes a user'
+    // #swagger.summary = 'Delete user'
+    // #swagger.description = 'Admin deletes a user permanently'
     // #swagger.security = [{ BearerAuth: [] }]
+
+    /* #swagger.parameters['id'] = {
+          in: 'path',
+          required: true,
+          type: 'integer'
+    } */
+
+    /* #swagger.responses[200] = {
+          description: 'User deleted successfully'
+    } */
+    /* #swagger.responses[400] = {
+          description: 'Invalid user ID'
+    } */
+   /* #swagger.responses[404] = {
+          description: 'User not found'
+    } */
+   /* #swagger.responses[500] = {
+          description: 'Error deleteing user'
+    } */
     return usersController.deleteUser(req, res, next);
   }
 );
-
-//user deactivation
+//deactivate user
 router.post(
   "/deactivate/:id",
   authentication.checkAuth,
   authorization.authorizeRole("ADMIN"),
   (req, res, next) => {
     // #swagger.tags = ['Users']
-    // #swagger.summary = 'Admin deactivates a user'
+    // #swagger.summary = 'Deactivate user'
+    //#swagger.description = 'Admin deactivates the user , the user can't use any feature in the system.An admin can deactivate citizens,moderators, and admins'
     // #swagger.security = [{ BearerAuth: [] }]
-    return usersController.deactivateUser(req, res, next);
+
+    /* #swagger.parameters['id'] = {
+          in: 'path',
+          required: true,
+          type: 'integer'
+    } */
+   /* #swagger.responses[400] = {
+          description: 'Invalid user ID'
+    } */
+   /* #swagger.responses[404] = {
+          description: 'User not found'
+    } */
+   /* #swagger.responses[400] = {
+          description: 'User is already deactivated'
+    } */
+   /* #swagger.responses[500] = {
+          description: 'Error deactivating user'
+    } */
+   /* #swagger.responses[200] = {
+          description: 'User deactivated successfully'
+    } */
+   return usersController.deactivateUser(req, res, next);
   }
 );
-
-//user activation
+//activate user
 router.post(
   "/activate/:id",
   authentication.checkAuth,
   authorization.authorizeRole("ADMIN"),
   (req, res, next) => {
     // #swagger.tags = ['Users']
-    // #swagger.summary = 'Admin activates a user'
+    // #swagger.summary = 'Activate user'
+    //#swagger.description= ' Admin activates any user in the system ,an admin can activate citizens,moderators, and admins'
     // #swagger.security = [{ BearerAuth: [] }]
+
+    /* #swagger.parameters['id'] = {
+          in: 'path',
+          required: true,
+          type: 'integer'
+    } */
+      /* #swagger.responses[400] = {
+          description: 'Invalid user ID'
+    } */
+   /* #swagger.responses[404] = {
+          description: 'User not found'
+    } */
+   /* #swagger.responses[400] = {
+          description: 'User is already activated'
+    } */
+   /* #swagger.responses[500] = {
+          description: 'Error activating user'
+    } */
+   /* #swagger.responses[200] = {
+          description: 'User activated successfully'
+    } */
     return usersController.activateUser(req, res, next);
   }
 );
-
-// admin and moderator
-//view user information
+//admin and moderator
+//get user by id
 router.get(
   "/:id",
   authentication.checkAuth,
   authorization.authorizeRole("ADMIN", "MODERATOR"),
   (req, res, next) => {
     // #swagger.tags = ['Users']
-    // #swagger.summary = 'Admin or moderator views a specific user'
+    // #swagger.summary = 'Get user by ID'
+    //swagger.description = ' Admin and moderator retrieve user's info by ID'
     // #swagger.security = [{ BearerAuth: [] }]
+
+    /* #swagger.parameters['id'] = {
+          in: 'path',
+          required: true,
+          type: 'integer'
+    } */
+
     return usersController.showUserInfo(req, res, next);
   }
 );
-//view all users information
+
+
+// get all users
 router.get(
   "/",
   authentication.checkAuth,
   authorization.authorizeRole("ADMIN", "MODERATOR"),
   (req, res, next) => {
     // #swagger.tags = ['Users']
-    // #swagger.summary = 'Admin or moderator views all users'
+    // #swagger.summary = 'Get all users'
+    //swagger.description = ' Admin and moderator retrieve all users' info'
     // #swagger.security = [{ BearerAuth: [] }]
+
+    /* #swagger.responses[200] = {
+          description: 'List of users'
+    } */
+    /* #swagger.responses[404] = {
+          description: 'users not found'
+    } */
+    /* #swagger.responses[500] = {
+          description: 'Error fetching users'
+    } */
+
     return usersController.showAllUsers(req, res, next);
   }
 );
